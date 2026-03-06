@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Layout, Trash2Icon } from "lucide-react";
+import { Edit, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -12,7 +12,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { deleteWorkspace } from "@/features/workspace/actions";
+import { deleteWorkspace, updateWorkspace } from "@/features/workspace/actions";
+import { InputModal } from "./InputModal";
 
 interface WorkspaceCardProps {
   id: string;
@@ -27,6 +28,7 @@ export const WorkspaceCard = ({
   description,
 }: WorkspaceCardProps) => {
   const [open, setOpen] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
 
   const handleDelete = async () => {
     await deleteWorkspace(id);
@@ -42,7 +44,15 @@ export const WorkspaceCard = ({
               {title}
             </h3>
             <div className="flex gap-2 ml-auto">
-              <Layout size={20} className="text-slate-400 ml-auto" />
+              <Edit
+                size={20}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setOpenEditModal(true);
+                }}
+                className="text-slate-400 transition-all duration-200 hover:text-blue-600 hover:scale-110 hover:rotate-6 cursor-pointer"
+              />
               <Trash2Icon
                 size={20}
                 onClick={(e) => {
@@ -78,6 +88,19 @@ export const WorkspaceCard = ({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      {openEditModal && (
+        <InputModal
+          setOpenModal={setOpenEditModal}
+          title="Edit Workspace"
+          firstInputLabel="Workspace Name"
+          secondInputLabel="Description"
+          btnLabel="Update"
+          onSubmitAction={async (data) => {
+            await updateWorkspace(id, data.field1, data.field2);
+            setOpenEditModal(false);
+          }}
+        />
+      )}
     </>
   );
 };
