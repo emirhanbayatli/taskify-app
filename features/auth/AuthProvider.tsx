@@ -10,21 +10,8 @@ import {
 } from "firebase/auth";
 import { toast } from "sonner";
 import { getErrorMessageFromCode } from "@/lib/utils";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-
-type UserType = {
-  email: string | null;
-  id: string | null;
-} | null;
-
-type AuthContextType = {
-  user: UserType;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, fullName: string) => Promise<void>;
-  logout: () => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
-};
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { AuthContextType, UserType } from "@/lib/types";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -33,9 +20,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        setUser({ email: firebaseUser.email, id: firebaseUser.uid });
+        const userRef = doc(db, "users", firebaseUser.uid);
+        const userSnap = await getDoc(userRef);
+        const userData = userSnap.data();
+        setUser({
+          email: firebaseUser.email,
+          id: firebaseUser.uid,
+          fullName: userData?.fullName || "",
+        });
       } else {
         setUser(null);
       }
