@@ -16,7 +16,8 @@ export type Column = {
   id?: string;
   title: string;
   order: number;
-  workspaceId: string;
+  workspaceId?: string;
+  columnId?: string;
 };
 
 export interface MiniTaskCardProps {
@@ -27,19 +28,23 @@ export interface MiniTaskCardProps {
   members: Member[];
   workspaceId: string;
   projectId: string;
+  onClick?: () => void;
 }
 
-export interface TaskCardProps {
+export interface Task {
   taskTitle: string;
   description: string;
   workspaceId: string;
   projectName: string;
-  projectStatus: string;
-  addMemberBtn: () => void;
-  addCommentBtn: () => void;
-  members: Member[];
-  comments: Comment[];
-  projectId: string;
+  projectStatus?: string;
+  addMemberBtn?: () => void;
+  addCommentBtn?: () => void;
+  onClose?: () => void;
+  members?: Member[];
+  comments?: Comment[];
+  projectId?: string;
+  taskId?: string;
+  columnId: string;
 }
 export interface Workspace {
   workspaceDesc: string;

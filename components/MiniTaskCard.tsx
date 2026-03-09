@@ -6,11 +6,15 @@ import { MessageCircle, Calendar } from "lucide-react";
 export default function MiniTaskCard({
   projectName,
   taskTitle,
+  onClick,
   comments = [],
   members = [],
 }: MiniTaskCardProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-4 w-full max-w-sm border border-gray-200 cursor-pointer">
+    <div
+      onClick={onClick}
+      className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-4 w-full max-w-sm border border-gray-200 cursor-pointer"
+    >
       <div className="flex justify-between items-start mb-3">
         <div className="flex flex-col gap-2">
           <span className="text-xs font-medium px-2 py-1 rounded-full bg-blue-100 text-blue-700 w-fit">

@@ -1,26 +1,23 @@
 import { X } from "lucide-react";
 import { useState } from "react";
 
-interface InputModalProps {
+interface ColumnModalProps {
   setOpenModal: (show: boolean) => void;
   title: string;
   firstInputLabel: string;
-  secondInputLabel: string;
   btnLabel: string;
-  onSubmitAction: (data: { field1: string; field2: string }) => void;
+  onSubmitAction: (data: { field1: string }) => void;
 }
 
-export const InputModal = ({
+export const ColumnModal = ({
   setOpenModal,
   title,
   firstInputLabel,
-  secondInputLabel,
   btnLabel,
   onSubmitAction,
-}: InputModalProps) => {
+}: ColumnModalProps) => {
   const [formData, setFormData] = useState({
     field1: "",
-    field2: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -55,21 +52,6 @@ export const InputModal = ({
               value={formData.field1}
               onChange={(e) =>
                 setFormData({ ...formData, field1: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-slate-700">
-              {secondInputLabel}
-            </label>
-            <input
-              type="text"
-              required
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-700 transition-all"
-              value={formData.field2}
-              onChange={(e) =>
-                setFormData({ ...formData, field2: e.target.value })
               }
             />
           </div>

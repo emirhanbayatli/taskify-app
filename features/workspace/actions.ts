@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase";
-import { Workspace } from "@/lib/types";
+import { Member, Workspace } from "@/lib/types";
 import {
   addDoc,
   collection,
@@ -77,3 +77,8 @@ export const updateWorkspace = async (
     toast.error("Worksapce updated unsuccessfully!");
   }
 };
+
+export async function addMemberToWorkspace(
+  workspaceId: string,
+  member: Member,
+) {}
