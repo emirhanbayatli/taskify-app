@@ -5,13 +5,13 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   query,
   serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export async function createWorkspace({
@@ -77,8 +77,20 @@ export const updateWorkspace = async (
     toast.error("Worksapce updated unsuccessfully!");
   }
 };
-
-export async function addMemberToWorkspace(
-  workspaceId: string,
-  member: Member,
-) {}
+export async function getWorkspaceWithId(workspaceId: string) {
+  try {
+    const docRef = doc(db, "workspace", workspaceId);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      return null;
+    }
+    return {
+      id: docSnap.id,
+      ...docSnap.data(),
+    };
+  } catch (error) {
+    console.error("Workspace get unsuccessfully!", error);
+    toast.error("Workspace get unsuccessfully!");
+    return null;
+  }
+}
