@@ -10,7 +10,7 @@ export interface Member {
   id: string;
   fullName: string;
   email: string;
-  avatar: string;
+  avatar?: string;
 }
 export type Column = {
   id?: string;

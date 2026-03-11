@@ -64,7 +64,7 @@ export const updateTask = async ({
 
 export const deleteTask = async (id: string) => {
   try {
-    await deleteDoc(doc(db, "task", id));
+    await deleteDoc(doc(db, "tasks", id));
     toast.success("Task deleted successfully!");
   } catch (error) {
     toast.error("Task deleted unsuccessfully!");

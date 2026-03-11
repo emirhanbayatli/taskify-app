@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase";
-import { Member, Workspace } from "@/lib/types";
+import { Workspace } from "@/lib/types";
 import {
   addDoc,
   collection,

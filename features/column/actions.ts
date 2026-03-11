@@ -6,6 +6,7 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  orderBy,
   query,
   serverTimestamp,
   updateDoc,
@@ -55,7 +56,11 @@ export const deleteColumn = async (id: string) => {
 export const getColumnByWorkspaceId = async (id: string) => {
   try {
     const columnRef = collection(db, "column");
-    const q = query(columnRef, where("workspaceId", "==", id));
+    const q = query(
+      columnRef,
+      where("workspaceId", "==", id),
+      orderBy("order"),
+    );
     const querySnapshot = await getDocs(q);
 
     const column = querySnapshot.docs.map((doc) => ({
