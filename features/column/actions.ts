@@ -1,3 +1,4 @@
+"use server";
 import { db } from "@/lib/firebase";
 import { Column } from "@/lib/types";
 import {
@@ -8,51 +9,56 @@ import {
   getDocs,
   orderBy,
   query,
-  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
-import { toast } from "sonner";
 
 export async function createColumn({ title, order, workspaceId }: Column) {
   try {
     await addDoc(collection(db, "column"), {
-      title: title,
-      order: order,
-      workspaceId: workspaceId,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+      title,
+      order,
+      workspaceId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     });
-    toast.success("Column created successfully!");
+
+    return { success: true, message: "Column created successfully!" };
   } catch (error) {
-    toast.error("Column created unsuccessfully!");
-    console.error(error, "Column created unsuccessfully!");
+    return { success: false, message: "Failed to create column" };
   }
 }
-
-export const updateColumn = async ({ title, order, columnId }: Column) => {
+export const updateColumn = async ({
+  title,
+  order,
+  columnId,
+  workspaceId,
+}: Column) => {
   try {
     const workspaceRef = doc(db, "column", columnId as string);
     await updateDoc(workspaceRef, {
       title: title,
       order: order,
-      updatedAt: serverTimestamp(),
+      updatedAt: new Date().toISOString(),
     });
-    toast.success("Column updated successfully!");
+
+    return { success: true, message: "Column updated successfully!" };
   } catch (error) {
     console.error(error, "Column updated unsuccessfully!");
-    toast.error("Column updated unsuccessfully!");
+    return { success: false, message: "Failed to update column" };
   }
 };
 
-export const deleteColumn = async (id: string) => {
+export const deleteColumn = async (id: string, workspaceId: string) => {
   try {
     await deleteDoc(doc(db, "column", id));
-    toast.success("Column deleted successfully!");
+
+    return { success: true, message: "Column deleted!" };
   } catch (error) {
-    toast.error("Column deleted unsuccessfully!");
+    return { success: false, message: "Delete failed" };
   }
 };
+
 export const getColumnByWorkspaceId = async (id: string) => {
   try {
     const columnRef = collection(db, "column");
@@ -63,12 +69,12 @@ export const getColumnByWorkspaceId = async (id: string) => {
     );
     const querySnapshot = await getDocs(q);
 
-    const column = querySnapshot.docs.map((doc) => ({
+    const columns = querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    return column;
+    return columns;
   } catch (error) {
     console.error("Error fetching columns:", error);
     return [];

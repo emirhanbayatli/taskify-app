@@ -1,19 +1,17 @@
+"use server";
 import { db } from "@/lib/firebase";
 import { Member, Workspace } from "@/lib/types";
 import {
   addDoc,
-  arrayUnion,
   collection,
   deleteDoc,
   doc,
   getDoc,
   getDocs,
   query,
-  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
-import { toast } from "sonner";
 import { getUserWithId } from "../members/actions";
 
 export async function createWorkspace({
@@ -23,16 +21,14 @@ export async function createWorkspace({
 }: Workspace) {
   try {
     const user = await getUserWithId(ownerId);
-    console.log(user, "deneme");
     if (!user) {
-      toast.error("User not found");
-      return;
+      return { success: false, message: "User not found" };
     }
 
     await addDoc(collection(db, "workspace"), {
-      workspaceName: workspaceName,
-      workspaceDesc: workspaceDesc,
-      ownerId: ownerId,
+      workspaceName,
+      workspaceDesc,
+      ownerId,
       members: [
         {
           id: ownerId,
@@ -41,13 +37,13 @@ export async function createWorkspace({
           avatar: user?.avatar || "",
         },
       ],
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     });
-    toast.success("Workspace created successfully!");
+    return { success: true, message: "Workspace created successfully!" };
   } catch (error) {
-    console.error(error, "Worksapce created unsuccessfully!");
-    toast.error("Worksapce created unsuccessfully!");
+    console.error(error);
+    return { success: false, message: "Workspace creation failed" };
   }
 }
 export const getWorkspacesByOwner = async (ownerId: string) => {
@@ -71,9 +67,10 @@ export const getWorkspacesByOwner = async (ownerId: string) => {
 export const deleteWorkspace = async (id: string) => {
   try {
     await deleteDoc(doc(db, "workspace", id));
-    toast.success("Workspace deleted successfully!");
+    return { success: true, message: "Workspace deleted successfully!" };
   } catch (error) {
-    toast.error("Worksapce deleted unsuccessfully!");
+    console.error(error);
+    return { success: false, message: "Delete failed" };
   }
 };
 
@@ -85,30 +82,27 @@ export const updateWorkspace = async (
   try {
     const workspaceRef = doc(db, "workspace", id);
     await updateDoc(workspaceRef, {
-      workspaceName: workspaceName,
-      workspaceDesc: workspaceDesc,
-      updatedAt: serverTimestamp(),
+      workspaceName,
+      workspaceDesc,
+      updatedAt: new Date().toISOString(),
     });
-    toast.success("Workspace updated successfully!");
+    return { success: true, message: "Workspace updated successfully!" };
   } catch (error) {
-    console.error(error, "Worksapce updated unsuccessfully!");
-    toast.error("Worksapce updated unsuccessfully!");
+    console.error(error);
+    return { success: false, message: "Update failed" };
   }
 };
 export async function getWorkspaceWithId(workspaceId: string) {
   try {
     const docRef = doc(db, "workspace", workspaceId);
     const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) {
-      return null;
-    }
+    if (!docSnap.exists()) return null;
     return {
       id: docSnap.id,
       ...docSnap.data(),
     };
   } catch (error) {
-    console.error("Workspace get unsuccessfully!", error);
-    toast.error("Workspace get unsuccessfully!");
+    console.error(error);
     return null;
   }
 }
@@ -119,14 +113,14 @@ export async function getWorkspaceIdsByMember(userId: string) {
     const workspaceIds: string[] = [];
     snapshot.forEach((doc) => {
       const data = doc.data();
-      if (data.members.some((member: Member) => member.id === userId)) {
+      if (data.members?.some((member: Member) => member.id === userId)) {
         workspaceIds.push(doc.id);
       }
     });
 
     return workspaceIds;
   } catch (error) {
-    console.error("Error fetching workspaceIds:", error);
+    console.error(error);
     return [];
   }
 }

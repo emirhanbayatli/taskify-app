@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/features/auth/AuthProvider";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 export default function PrivateLayout({
   children,
@@ -9,29 +11,17 @@ export default function PrivateLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    const user = "fake-auth-token"; // Replace with real auth check
-
-    if (!user) {
+    if (!loading && !user) {
       router.replace("/login");
-    } else {
-      setLoading(false);
     }
-  }, [router]);
+  }, [loading, user, router]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
-  }
+  if (loading) return <LoadingSpinner />;
 
-  return (
-    <div className="min-h-screen flex">
-      <main className="flex-1 p-6 bg-slate-100">{children}</main>
-    </div>
-  );
+  if (!user) return null;
+
+  return <>{children}</>;
 }

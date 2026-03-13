@@ -1,3 +1,4 @@
+"use server";
 import { db } from "@/lib/firebase";
 import { Task } from "@/lib/types";
 import {
@@ -7,11 +8,9 @@ import {
   doc,
   getDocs,
   query,
-  serverTimestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
-import { toast } from "sonner";
 
 export async function createTask({
   taskTitle,
@@ -22,18 +21,19 @@ export async function createTask({
 }: Task) {
   try {
     await addDoc(collection(db, "tasks"), {
-      taskTitle: taskTitle,
-      description: description,
-      workspaceId: workspaceId,
-      projectName: projectName,
-      columnId: columnId,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+      taskTitle,
+      description,
+      workspaceId,
+      projectName,
+      columnId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     });
-    toast.success("Task created successfully!");
+
+    return { success: true, message: "Task created successfully!" };
   } catch (error) {
-    toast.error("Task created unsuccessfully!");
-    console.error(error, "Task created unsuccessfully!");
+    console.error(error);
+    return { success: false, message: "Task creation failed" };
   }
 }
 
@@ -46,28 +46,30 @@ export const updateTask = async ({
   taskId,
 }: Task) => {
   try {
-    const workspaceRef = doc(db, "tasks", taskId as string);
-    await updateDoc(workspaceRef, {
-      taskTitle: taskTitle,
-      description: description,
-      workspaceId: workspaceId,
-      projectName: projectName,
-      projectStatus: projectStatus,
-      updatedAt: serverTimestamp(),
+    const taskRef = doc(db, "tasks", taskId as string);
+    await updateDoc(taskRef, {
+      taskTitle,
+      description,
+      workspaceId,
+      projectName,
+      projectStatus,
+      updatedAt: new Date().toISOString(),
     });
-    toast.success("Task updated successfully!");
+
+    return { success: true, message: "Task updated successfully!" };
   } catch (error) {
-    console.error(error, "Task updated unsuccessfully!");
-    toast.error("Task updated unsuccessfully!");
+    console.error(error);
+    return { success: false, message: "Task update failed" };
   }
 };
 
-export const deleteTask = async (id: string) => {
+export const deleteTask = async (id: string, workspaceId: string) => {
   try {
     await deleteDoc(doc(db, "tasks", id));
-    toast.success("Task deleted successfully!");
+    return { success: true, message: "Task deleted successfully!" };
   } catch (error) {
-    toast.error("Task deleted unsuccessfully!");
+    console.error(error);
+    return { success: false, message: "Task deletion failed" };
   }
 };
 
@@ -77,14 +79,14 @@ export const getTaskByWorkspaceId = async (id: string) => {
     const q = query(taskRef, where("workspaceId", "==", id));
     const querySnapshot = await getDocs(q);
 
-    const task = querySnapshot.docs.map((doc) => ({
+    const tasks = querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    return task;
+    return tasks;
   } catch (error) {
-    console.error("Error fetching task:", error);
+    console.error("Error fetching tasks:", error);
     return [];
   }
 };
