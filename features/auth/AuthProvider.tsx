@@ -10,7 +10,7 @@ import {
 } from "firebase/auth";
 import { toast } from "sonner";
 import { getErrorMessageFromCode } from "@/lib/utils";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { AuthContextType, UserType } from "@/lib/types";
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -59,8 +59,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       await setDoc(doc(db, "users", currentUserId), {
         email: email,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         image: "", // TODO: Add default image URL here and add a dynamic image link upload feature in the future
         fullName: fullName,
         role: "user",

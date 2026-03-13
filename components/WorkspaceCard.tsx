@@ -14,24 +14,47 @@ import {
 } from "@/components/ui/alert-dialog";
 import { deleteWorkspace, updateWorkspace } from "@/features/workspace/actions";
 import { InputModal } from "./InputModal";
+import { toast } from "sonner";
 
 interface WorkspaceCardProps {
   id: string;
   title: string;
   description: string;
   deleteBtn?: boolean;
+  onRefresh: () => Promise<void>;
 }
 
 export const WorkspaceCard = ({
   id,
   title,
   description,
+  onRefresh,
 }: WorkspaceCardProps) => {
   const [open, setOpen] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
 
   const handleDelete = async () => {
-    await deleteWorkspace(id);
+    const result = await deleteWorkspace(id);
+    if (result.success) {
+      toast.success(result.message);
+      await onRefresh();
+    } else {
+      toast.error(result.message);
+    }
+    setOpen(false);
+  };
+
+  const handleUpdate = async (
+    data: { field1: string; field2: string },
+    id: string,
+  ) => {
+    const result = await updateWorkspace(id, data.field1, data.field2);
+    if (result.success) {
+      toast.success(result.message);
+      await onRefresh();
+    } else {
+      toast.error(result.message);
+    }
     setOpen(false);
   };
 
@@ -96,7 +119,7 @@ export const WorkspaceCard = ({
           secondInputLabel="Description"
           btnLabel="Update"
           onSubmitAction={async (data) => {
-            await updateWorkspace(id, data.field1, data.field2);
+            handleUpdate(data, id);
             setOpenEditModal(false);
           }}
         />
