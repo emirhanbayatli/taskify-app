@@ -58,7 +58,7 @@ export const ColumnModal = ({
 
           <button
             type="submit"
-            className="mt-2 w-full bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow-sm"
+            className="mt-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow-sm"
           >
             {btnLabel}
           </button>

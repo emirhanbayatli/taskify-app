@@ -101,7 +101,7 @@ export const TaskModal = ({
             </button>
             <button
               type="submit"
-              className="flex-[2] bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors shadow-md"
+              className="flex-[2] bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition-colors shadow-md"
             >
               {btnLabel}
             </button>

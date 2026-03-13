@@ -21,7 +21,9 @@ export default function Home() {
 
         <div className="flex justify-center gap-4 mt-10">
           <Link href="/register">
-            <Button size="lg">Start for Free</Button>
+            <Button className="bg-indigo-600 hover:bg-indigo-700" size="lg">
+              Start for Free
+            </Button>
           </Link>
           <Link href="/login">
             <Button variant="outline" size="lg">

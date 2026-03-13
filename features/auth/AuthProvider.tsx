@@ -41,7 +41,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      setLoading(true);
       await signInWithEmailAndPassword(auth, email, password);
       toast.success("Logged in successfully!");
     } catch (err: any) {
@@ -78,7 +77,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      setLoading(true);
       await signOut(auth);
       toast.success("Logged out successfully!");
     } catch (err: any) {

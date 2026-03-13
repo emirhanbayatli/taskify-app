@@ -52,7 +52,7 @@ export default function Navbar() {
           {!user && (
             <Link
               href="/login"
-              className="px-4 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:opacity-90 transition"
+              className="px-4 py-2 text-sm font-medium rounded-md bg-indigo-600 hover:bg-indigo-700 text-white transition"
             >
               Login
             </Link>
@@ -62,7 +62,7 @@ export default function Navbar() {
             <>
               <Link
                 href="/tasks/new"
-                className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:opacity-90 transition"
+                className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-indigo-600 hover:bg-indigo-700 text-white transition"
               >
                 Add Task
               </Link>

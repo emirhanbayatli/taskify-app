@@ -1,7 +1,8 @@
 import { db } from "@/lib/firebase";
-import { Workspace } from "@/lib/types";
+import { Member, Workspace } from "@/lib/types";
 import {
   addDoc,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
@@ -13,6 +14,7 @@ import {
   where,
 } from "firebase/firestore";
 import { toast } from "sonner";
+import { getUserWithId } from "../members/actions";
 
 export async function createWorkspace({
   ownerId,
@@ -20,15 +22,31 @@ export async function createWorkspace({
   workspaceDesc,
 }: Workspace) {
   try {
+    const user = await getUserWithId(ownerId);
+    console.log(user, "deneme");
+    if (!user) {
+      toast.error("User not found");
+      return;
+    }
+
     await addDoc(collection(db, "workspace"), {
       workspaceName: workspaceName,
       workspaceDesc: workspaceDesc,
       ownerId: ownerId,
+      members: [
+        {
+          id: ownerId,
+          email: user?.email || "",
+          fullName: user?.fullName || "",
+          avatar: user?.avatar || "",
+        },
+      ],
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
     toast.success("Workspace created successfully!");
   } catch (error) {
+    console.error(error, "Worksapce created unsuccessfully!");
     toast.error("Worksapce created unsuccessfully!");
   }
 }
@@ -92,5 +110,23 @@ export async function getWorkspaceWithId(workspaceId: string) {
     console.error("Workspace get unsuccessfully!", error);
     toast.error("Workspace get unsuccessfully!");
     return null;
+  }
+}
+
+export async function getWorkspaceIdsByMember(userId: string) {
+  try {
+    const snapshot = await getDocs(collection(db, "workspace"));
+    const workspaceIds: string[] = [];
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data.members.some((member: Member) => member.id === userId)) {
+        workspaceIds.push(doc.id);
+      }
+    });
+
+    return workspaceIds;
+  } catch (error) {
+    console.error("Error fetching workspaceIds:", error);
+    return [];
   }
 }

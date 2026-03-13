@@ -102,7 +102,12 @@ export default function TaskCard({
             <div className="space-y-2">
               <Textarea placeholder="Yorum yaz..." />
               <div className="flex justify-end">
-                <Button onClick={() => {}}>Add Comment</Button>
+                <Button
+                  className="bg-indigo-600 hover:bg-indigo-700"
+                  onClick={() => {}}
+                >
+                  Add Comment
+                </Button>
               </div>
             </div>
           </div>

@@ -156,7 +156,7 @@ export function AuthForm({ type }: AuthFormProps) {
           </div>
         ) : null}
 
-        <button className="h-12 bg-blue-700 text-white/90 font-bold rounded-lg hover:bg-blue-600 transition">
+        <button className="h-12 text-white/90 font-bold rounded-lg bg-indigo-600 hover:bg-indigo-700 transition">
           {type == "login"
             ? "Sign In"
             : type == "resetPassword"
