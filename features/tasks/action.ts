@@ -6,6 +6,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   query,
   updateDoc,
@@ -40,17 +41,15 @@ export async function createTask({
 export const updateTask = async ({
   taskTitle,
   description,
-  workspaceId,
   projectName,
   projectStatus,
-  taskId,
+  id,
 }: Task) => {
   try {
-    const taskRef = doc(db, "tasks", taskId as string);
+    const taskRef = doc(db, "tasks", id as string);
     await updateDoc(taskRef, {
       taskTitle,
       description,
-      workspaceId,
       projectName,
       projectStatus,
       updatedAt: new Date().toISOString(),
@@ -63,13 +62,43 @@ export const updateTask = async ({
   }
 };
 
-export const deleteTask = async (id: string, workspaceId: string) => {
+export const deleteTask = async (id: string) => {
   try {
     await deleteDoc(doc(db, "tasks", id));
     return { success: true, message: "Task deleted successfully!" };
   } catch (error) {
     console.error(error);
     return { success: false, message: "Task deletion failed" };
+  }
+};
+
+export const getTaskWithId = async (id: string) => {
+  try {
+    const docRef = doc(db, "tasks", id);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+      return {
+        success: false,
+        message: "Task not found",
+        data: null,
+      };
+    }
+
+    return {
+      success: true,
+      data: {
+        id: docSnap.id,
+        ...docSnap.data(),
+      },
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "An error occurred while fetching the task",
+      data: null,
+    };
   }
 };
 

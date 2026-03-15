@@ -32,6 +32,24 @@ export async function addMembersToWorkspace({
     return { success: false, message: "Failed to add member" };
   }
 }
+export async function addMemberToTask({
+  taskId,
+  member,
+}: {
+  taskId: string;
+  member: Member;
+}) {
+  try {
+    const taskRef = doc(db, "tasks", taskId);
+    await updateDoc(taskRef, {
+      members: arrayUnion(member),
+    });
+    return { success: true, message: "Member added successfully!" };
+  } catch (error) {
+    console.error(error, "Failed to add member");
+    return { success: false, message: "Failed to add member" };
+  }
+}
 
 export async function getUserWithEmail(email: string) {
   try {
