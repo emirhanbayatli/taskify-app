@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/lib/firebase";
-import { Task } from "@/lib/types";
+import { Member, Task } from "@/lib/types";
 import {
   addDoc,
   collection,
@@ -19,6 +19,7 @@ export async function createTask({
   workspaceId,
   projectName,
   columnId,
+  selectedMembers,
 }: Task) {
   try {
     await addDoc(collection(db, "tasks"), {
@@ -27,6 +28,8 @@ export async function createTask({
       workspaceId,
       projectName,
       columnId,
+      members: selectedMembers,
+      memberIds: selectedMembers?.map((member: Member) => member.id),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
@@ -119,3 +122,23 @@ export const getTaskByWorkspaceId = async (id: string) => {
     return [];
   }
 };
+
+export async function getTaskWithMemberId(memberId: string) {
+  try {
+    const tasksRef = collection(db, "tasks");
+
+    const q = query(tasksRef, where("memberIds", "array-contains", memberId));
+
+    const querySnapshot = await getDocs(q);
+
+    const tasks = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return tasks;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}

@@ -67,8 +67,9 @@ export default function TaskCard({
       toast.error("Failed to copy link.");
     }
   };
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-hidden transition-all">
+    <div className="fixed inset-0 z-[50]  flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-hidden transition-all">
       <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-4xl border border-gray-200 animate-in fade-in zoom-in duration-200">
         <div className="flex justify-between items-start gap-2">
           <div className="flex flex-wrap gap-2">
@@ -166,13 +167,17 @@ export default function TaskCard({
                 {members?.map((member, i) => (
                   <Avatar key={i} className="border-2 border-white w-8 h-8">
                     <AvatarFallback className="text-[10px] bg-gray-200">
-                      {member.fullName.slice(0, 2).toUpperCase()}
+                      {member.fullName
+                        ?.split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
                 ))}
                 <button
                   onClick={addMemberBtn}
-                  className="w-8 h-8 rounded-full bg-gray-100 border-2 border-dashed border-gray-400 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors ml-2"
+                  className="w-8 h-8 rounded-full bg-gray-100 border-2 border-dashed border-gray-400 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors ml-2 cursor-pointer"
                 >
                   +
                 </button>
@@ -228,7 +233,7 @@ export default function TaskCard({
 
           <div className="flex flex-col h-[400px]">
             <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              Comments{" "}
+              Comments
               <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
                 {comments?.length || 0}
               </span>

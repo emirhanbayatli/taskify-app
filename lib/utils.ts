@@ -43,3 +43,19 @@ export function getErrorMessageFromCode(code: string): string {
       return "An unexpected error occurred. Please try again.";
   }
 }
+export const formatTaskDate = (isoString: string) => {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+
+  const d = date.toLocaleDateString("tr-TR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+  const t = date.toLocaleTimeString("tr-TR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return `${d} • ${t}`;
+};

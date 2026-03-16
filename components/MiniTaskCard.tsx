@@ -5,6 +5,7 @@ import { MessageCircle, Calendar } from "lucide-react";
 
 export default function MiniTaskCard({
   projectName,
+  createdAt,
   taskTitle,
   onClick,
   comments = [],
@@ -24,18 +25,23 @@ export default function MiniTaskCard({
             {taskTitle}
           </h3>
         </div>
-
-        {members.map((member, index) => (
-          <Avatar key={index} className="h-8 w-8">
-            <AvatarFallback>{member.avatar}</AvatarFallback>
+        {members.length > 0 && (
+          <Avatar className="h-8 w-8">
+            <AvatarFallback>
+              {members[0]?.fullName
+                ?.split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase() || "U"}
+            </AvatarFallback>
           </Avatar>
-        ))}
+        )}
       </div>
 
       <div className="flex justify-between items-center text-xs text-gray-500">
         <div className="flex items-center gap-1">
           <Calendar size={14} />
-          <span>{}</span>
+          <span>{createdAt}</span>
         </div>
 
         <div className="flex items-center gap-1">

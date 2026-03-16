@@ -111,7 +111,7 @@ export default function Workspace() {
               <div className="flex items-center gap-2 mb-6 border-b border-slate-200 pb-2">
                 <LayoutGrid className="h-5 w-5 text-indigo-600" />
                 <h2 className="text-xl font-semibold text-slate-800">
-                  My Projects
+                  My Workspaces
                 </h2>
               </div>
 
