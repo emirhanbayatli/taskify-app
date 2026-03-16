@@ -29,12 +29,13 @@ export interface MiniTaskCardProps {
   workspaceId: string;
   projectId: string;
   onClick?: () => void;
+  createdAt: string;
 }
 
 export interface Task {
   taskTitle: string;
   description: string;
-  workspaceId: string;
+  workspaceId?: string;
   projectName: string;
   projectStatus?: string;
   addMemberBtn?: () => void;
@@ -43,8 +44,10 @@ export interface Task {
   members?: Member[];
   comments?: Comment[];
   projectId?: string;
-  taskId?: string;
-  columnId: string;
+  id?: string;
+  columnId?: string;
+  createdAt?: string;
+  selectedMembers?: Member[];
 }
 export interface Workspace {
   workspaceDesc: string;
