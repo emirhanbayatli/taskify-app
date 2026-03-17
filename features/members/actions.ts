@@ -3,6 +3,7 @@ import { db } from "@/lib/firebase";
 import { Member } from "@/lib/types";
 import {
   addDoc,
+  arrayRemove,
   arrayUnion,
   collection,
   doc,
@@ -25,6 +26,7 @@ export async function addMembersToWorkspace({
     const workspaceRef = doc(db, "workspace", workspaceId);
     await updateDoc(workspaceRef, {
       members: arrayUnion(member),
+      memberIds: arrayUnion(member.id),
     });
     return { success: true, message: "Member added successfully!" };
   } catch (error) {
@@ -43,6 +45,7 @@ export async function addMemberToTask({
     const taskRef = doc(db, "tasks", taskId);
     await updateDoc(taskRef, {
       members: arrayUnion(member),
+      memberIds: arrayUnion(member.id),
     });
     return { success: true, message: "Member added successfully!" };
   } catch (error) {
@@ -134,5 +137,54 @@ export async function updateInvitationStatus(userId: string, inviteId: string) {
   } catch (error) {
     console.error(error);
     return { success: false };
+  }
+}
+
+export async function removeMemberToWorkspace(
+  memberId: string,
+  workspaceId: string,
+) {
+  try {
+    const workspaceRef = doc(db, "workspace", workspaceId);
+
+    const docSnap = await getDoc(workspaceRef);
+    if (!docSnap.exists())
+      return { success: false, message: "Workspace not found" };
+
+    const data = docSnap.data();
+
+    const updatedMembers = data.members.filter((m: any) => m.id !== memberId);
+
+    await updateDoc(workspaceRef, {
+      members: updatedMembers,
+      memberIds: arrayRemove(memberId),
+    });
+
+    return { success: true, message: "Member removed from workspace" };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Failed to remove member" };
+  }
+}
+
+export async function removeMemberToTask(member: Member, taskId: string) {
+  try {
+    const taskRef = doc(db, "tasks", taskId);
+    const snap = await getDoc(taskRef);
+    const data = snap.data();
+
+    const updatedMembers = data?.members.filter(
+      (member: Member) => member.id !== member.id,
+    );
+
+    await updateDoc(taskRef, {
+      members: updatedMembers,
+      memberIds: arrayRemove(member.id),
+    });
+
+    return { success: true, message: "Member removed from task" };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Failed to remove member" };
   }
 }

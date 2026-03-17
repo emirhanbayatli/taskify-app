@@ -26,6 +26,13 @@ import { WorkspaceHeader } from "@/components/WorkspaceHeader";
 import { getWorkspaceWithId } from "@/features/workspace/actions";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { toast } from "sonner";
+import {
+  addMemberToTask,
+  removeMemberToTask,
+  removeMemberToWorkspace,
+} from "@/features/members/actions";
+import { formatTaskDate } from "@/lib/utils";
+import { MemberSelectModal } from "@/components/MemberSelectModal";
 
 export default function Workspace() {
   const params = useParams();
@@ -40,6 +47,8 @@ export default function Workspace() {
   const [openAddTaskModal, setAddTaskOpenModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [openAddMemberModal, setOpenAddMemberModal] = useState(false);
+  const [openAddMemberToTaskModal, setOpenAddMemberToTaskModal] =
+    useState(false);
 
   async function fetchAllData() {
     const columnsResult = await getColumnByWorkspaceId(workspaceId);
@@ -121,9 +130,32 @@ export default function Workspace() {
       projectName: data.projectName || "",
       workspaceId,
       columnId,
+      selectedMembers: [],
     });
     if (result.success) {
       toast.success(result.message);
+      await fetchAllData();
+    } else {
+      toast.error(result.message);
+    }
+  }
+
+  async function handleAddMemberToTask(taskId: string, member: Member) {
+    const result = await addMemberToTask({ taskId, member });
+    if (result.success) {
+      toast.success(result.message);
+      setOpenAddMemberToTaskModal(false);
+      await fetchAllData();
+    } else {
+      toast.error(result.message);
+    }
+  }
+  async function handleRemoveMemberFromTask(taskId: string, member: Member) {
+    const result = await removeMemberToTask(member, taskId);
+    if (result.success) {
+      toast.success(result.message);
+      setOpenAddMemberToTaskModal(false);
+      setSelectedTask(null);
       await fetchAllData();
     } else {
       toast.error(result.message);
@@ -138,6 +170,15 @@ export default function Workspace() {
           description={workspace?.workspaceDesc}
           onInvite={() => setOpenAddMemberModal(true)}
           members={workspace?.members as Member[]}
+          onRemoveMember={async (memberId: string) => {
+            const result = await removeMemberToWorkspace(memberId, workspaceId);
+            if (result.success) {
+              toast.success(result.message);
+              await fetchAllData();
+            } else {
+              toast.error(result.message);
+            }
+          }}
         />
       )}
       <div className="flex gap-4 p-4 overflow-x-auto min-h-screen">
@@ -160,18 +201,20 @@ export default function Workspace() {
             {tasks
               .filter((task) => task.columnId === col.id)
               .map((task, index) => (
+                //  <Sortable id={Number(task.taskId)} index={index} />
                 <MiniTaskCard
-                  key={task.taskId || `${col.id}-${index}`}
+                  key={task.id || `${col.id}-${index}`}
                   taskTitle={task.taskTitle}
                   description={task.description}
                   projectName={task.projectName}
                   comments={task.comments as Comment[]}
                   members={task.members as Member[]}
-                  workspaceId={task.workspaceId}
+                  workspaceId={task.workspaceId || ""}
                   projectId={task.projectId as string}
                   onClick={() => {
                     setSelectedTask(task);
                   }}
+                  createdAt={formatTaskDate(task.createdAt as string)}
                 />
               ))}
           </Column>
@@ -227,14 +270,22 @@ export default function Workspace() {
         )}
         {selectedTask && (
           <TaskCard
-            taskTitle={selectedTask?.taskTitle || "Test Task"}
-            description={selectedTask?.description || "This is a test task"}
-            projectName={selectedTask?.projectName || "Test Project"}
+            id={selectedTask.id}
+            taskTitle={selectedTask?.taskTitle || ""}
+            description={selectedTask?.description || ""}
+            projectName={selectedTask?.projectName || ""}
+            projectStatus={
+              columns.find((col) => col.id === selectedTask.columnId)?.title ||
+              ""
+            }
+            onClose={() => {
+              (setSelectedTask(null), fetchAllData());
+            }}
             members={selectedTask?.members as Member[]}
             comments={selectedTask?.comments as Comment[]}
-            onClose={() => setSelectedTask(null)}
             workspaceId={selectedTask?.workspaceId || ""}
             columnId={selectedTask?.columnId || ""}
+            addMemberBtn={() => setOpenAddMemberToTaskModal(true)}
           />
         )}
         {openAddMemberModal && (
@@ -244,7 +295,26 @@ export default function Workspace() {
             firstInputLabel={"Member Email"}
             btnLabel={"Add Member"}
             onSubmitAction={async (data) => {
-              await handleInvite(data.field1);
+              await handleInvite("eb.emirhan.eb@gmail.com"); //TODO: data.field1 email bilgisi ile guncellenecek modal hazirlanmasi gerekiyor
+            }}
+          />
+        )}
+        {openAddMemberToTaskModal && (
+          <MemberSelectModal
+            isOpen={openAddMemberToTaskModal}
+            onClose={() => setOpenAddMemberToTaskModal(false)}
+            workspaceMembers={workspace?.members as Member[]}
+            currentTaskMembers={selectedTask?.members as Member[]}
+            onSelectMember={async (member: Member) => {
+              await handleAddMemberToTask(selectedTask?.id as string, member);
+              setSelectedTask(null);
+            }}
+            onRemoveMember={async (member: Member) => {
+              await handleRemoveMemberFromTask(
+                selectedTask?.id as string,
+                member,
+              );
+              //await fetchAllData();
             }}
           />
         )}

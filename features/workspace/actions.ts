@@ -37,6 +37,7 @@ export async function createWorkspace({
           avatar: user?.avatar || "",
         },
       ],
+      memberIds: [ownerId],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
