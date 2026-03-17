@@ -1,6 +1,5 @@
 "use client";
-
-import { Trash, UserPlus } from "lucide-react"; // Silme ikonu ekledik
+import { Trash, UserPlus } from "lucide-react";
 import { Button } from "./ui/button";
 import { Member } from "@/lib/types";
 import { Avatar, AvatarFallback } from "./ui/avatar";

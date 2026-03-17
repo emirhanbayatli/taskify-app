@@ -3,13 +3,20 @@
 import { useAuth } from "@/features/auth/AuthProvider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { Avatar, AvatarFallback } from "./ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "./ui/dropdown-menu";
+import { LogOut, User } from "lucide-react";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const router = useRouter();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -68,47 +75,54 @@ export default function Navbar() {
               </Link>
 
               <div className="relative">
-                <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 cursor-pointer"
-                >
-                  <Avatar className="h-8 w-8 ">
-                    <AvatarFallback className="text-gray-800 font-bold">
-                      {user.fullName
-                        ?.split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .toUpperCase() || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center outline-none group">
+                      <Avatar className="h-9 w-9  group-hover:ring-indigo-100 transition-all shadow-sm">
+                        <AvatarFallback className="bg-indigo-50 text-gray-800 font-bold border border-indigo-100">
+                          {user.fullName
+                            ?.split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </button>
+                  </DropdownMenuTrigger>
 
-                {dropdownOpen && (
-                  <div className="absolute right-0 mt-3 w-56 rounded-xl border bg-popover p-2 shadow-lg">
-                    <div className="px-3 py-2 border-b mb-2">
-                      <p className="text-sm font-medium text-foreground">
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-56 mt-2 p-2 rounded-xl shadow-xl"
+                  >
+                    <DropdownMenuLabel className="p-3">
+                      <p className="text-sm font-bold text-foreground">
                         {user.fullName}
                       </p>
-                      <p className="text-xs text-muted-foreground truncate">
+                      <p className="text-xs font-medium text-muted-foreground truncate">
                         {user.email}
                       </p>
-                    </div>
+                    </DropdownMenuLabel>
 
-                    <Link
-                      href="/profile"
-                      className="block px-3 py-2 text-sm rounded-md hover:bg-accent transition"
-                    >
-                      Profile
-                    </Link>
+                    <DropdownMenuSeparator className="my-1" />
 
-                    <button
+                    <DropdownMenuItem className="flex items-center p-2 rounded-lg cursor-pointer">
+                      <User className="mr-3 h-4 w-4 text-muted-foreground" />
+                      <Link href="/profile" className="font-medium">
+                        My Profile
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator className="my-1" />
+
+                    <DropdownMenuItem
                       onClick={handleLogout}
-                      className="w-full text-left px-3 py-2 text-sm rounded-md text-red-500 hover:bg-red-500/10 transition cursor-pointer"
+                      className="flex items-center p-2 rounded-lg text-red-600 focus:bg-red-50 focus:text-red-600 cursor-pointer"
                     >
-                      Logout
-                    </button>
-                  </div>
-                )}
+                      <LogOut className="mr-3 h-4 w-4" />
+                      <span className="font-medium">Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </>
           )}
