@@ -9,13 +9,14 @@ import { useState } from "react";
 import { deleteTask, updateTask } from "@/features/tasks/action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { addCommentToTask } from "@/features/comment/action";
+import { useAuth } from "@/features/auth/AuthProvider";
 
 export default function TaskCard({
   taskTitle,
   projectStatus,
   description,
   projectName,
-  addCommentBtn,
   addMemberBtn,
   members,
   comments,
@@ -28,8 +29,10 @@ export default function TaskCard({
   const [tempDesc, setTempDesc] = useState(description);
   const [tempProjectName, setTempProjectName] = useState(projectName);
   const [tempProjectStatus, setProjectStatus] = useState(projectStatus ?? "");
+  const [commentMessage, setCommentMessage] = useState("");
 
   const router = useRouter();
+  const { user } = useAuth();
 
   const handleUpdateTask = async () => {
     const result = await updateTask({
@@ -65,6 +68,32 @@ export default function TaskCard({
       toast.success("Link copied to clipboard!");
     } catch (err) {
       toast.error("Failed to copy link.");
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!commentMessage.trim()) return;
+    if (!user) {
+      toast.error("You must be logged in to comment");
+      return;
+    }
+
+    const result = await addCommentToTask({
+      taskId: id as string,
+      author: {
+        id: user.id as string,
+        fullName: user.fullName,
+        email: user.email as string,
+      },
+      message: commentMessage,
+      date: new Date().toISOString(),
+    });
+
+    if (result.success) {
+      toast.success(result.message);
+      setCommentMessage("");
+    } else {
+      toast.error(result.message);
     }
   };
 
@@ -189,12 +218,14 @@ export default function TaskCard({
                 Description
               </span>
               {isEditing ? (
-                <Textarea
-                  value={tempDesc}
-                  onChange={(e) => setTempDesc(e.target.value)}
-                  className="min-h-[150px] focus:ring-2 focus:ring-blue-500 border-gray-200 resize-none"
-                  placeholder="Task description..."
-                />
+                <ScrollArea className="h-32 w-full rounded-md border border-transparent hover:border-gray-100 p-2 transition-all cursor-pointer">
+                  <Textarea
+                    value={tempDesc}
+                    onChange={(e) => setTempDesc(e.target.value)}
+                    className="min-h-[150px] focus:ring-2 focus:ring-blue-500 border-gray-200 resize-none"
+                    placeholder="Task description..."
+                  />
+                </ScrollArea>
               ) : (
                 <ScrollArea
                   className="h-32 w-full rounded-md border border-transparent hover:border-gray-100 p-2 transition-all cursor-pointer"
@@ -239,13 +270,17 @@ export default function TaskCard({
               </span>
             </h3>
 
-            <ScrollArea className="flex-1 pr-4 mb-4">
+            <ScrollArea className="flex-1 overflow-y-auto pr-4 mb-4 custom-scrollbar">
               <div className="space-y-4">
                 {comments?.map((comment) => (
                   <div key={comment.id} className="group flex gap-3">
-                    <Avatar className="w-8 h-8">
+                    <Avatar className="w-8 h-8 shrink-0">
                       <AvatarFallback className="text-[10px]">
-                        {comment.author.fullName.slice(0, 2).toUpperCase()}
+                        {comment.author.fullName
+                          ?.split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
@@ -266,15 +301,17 @@ export default function TaskCard({
               </div>
             </ScrollArea>
 
-            <div className="space-y-2 mt-auto">
+            <div className="space-y-2 mt-auto pt-2 border-t border-gray-50">
               <Textarea
                 placeholder="Write a comment..."
-                className="text-xs min-h-[80px] focus:ring-indigo-500"
+                className="text-xs min-h-[80px] focus:ring-indigo-500 resize-none"
+                value={commentMessage}
+                onChange={(e) => setCommentMessage(e.target.value)}
               />
               <Button
                 size="sm"
                 className="w-full bg-indigo-600 hover:bg-indigo-700"
-                onClick={addCommentBtn}
+                onClick={() => handleAddComment()}
               >
                 Post Comment
               </Button>
