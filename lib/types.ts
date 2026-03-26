@@ -3,7 +3,8 @@ export interface Comment {
   taskId: string;
   author: Member;
   message: string;
-  date: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Member {

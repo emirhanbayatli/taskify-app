@@ -29,6 +29,8 @@ export default function Home() {
             <Button variant="outline" size="lg">
               Login
             </Button>
+            {/* TODO: Kullanici login bile olsa anlik olarak login form gozukuyor,
+            bunu duzelt */}
           </Link>
         </div>
       </section>

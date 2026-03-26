@@ -99,7 +99,7 @@ export default function TaskCard({
     const result = await addCommentToTask({
       taskId: id as string,
       ...newComment,
-      date: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
     });
 
     if (result.success) {
@@ -345,7 +345,9 @@ export default function TaskCard({
                           {comment.author.fullName}
                         </span>
                         <span className="text-[10px] text-gray-400">
-                          {formatDate(comment.date)}
+                          {formatDate(
+                            comment.updatedAt || comment.createdAt || "",
+                          )}
                         </span>
                       </div>
                       {editingCommentId === String(comment.id) ? (
