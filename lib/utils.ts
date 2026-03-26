@@ -43,7 +43,7 @@ export function getErrorMessageFromCode(code: string): string {
       return "An unexpected error occurred. Please try again.";
   }
 }
-export const formatTaskDate = (isoString: string) => {
+export const formatDate = (isoString: string) => {
   if (!isoString) return "";
   const date = new Date(isoString);
 

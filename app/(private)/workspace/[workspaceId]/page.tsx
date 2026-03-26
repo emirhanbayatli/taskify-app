@@ -31,8 +31,9 @@ import {
   removeMemberToTask,
   removeMemberToWorkspace,
 } from "@/features/members/actions";
-import { formatTaskDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { MemberSelectModal } from "@/components/MemberSelectModal";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 export default function Workspace() {
   const params = useParams();
@@ -164,7 +165,7 @@ export default function Workspace() {
 
   return (
     <div>
-      {workspace && (
+      {workspace ? (
         <WorkspaceHeader
           name={workspace?.workspaceName}
           description={workspace?.workspaceDesc}
@@ -180,6 +181,8 @@ export default function Workspace() {
             }
           }}
         />
+      ) : (
+        <LoadingSpinner />
       )}
       <div className="flex gap-4 p-4 overflow-x-auto min-h-screen">
         {columns.map((col) => (
@@ -214,7 +217,7 @@ export default function Workspace() {
                   onClick={() => {
                     setSelectedTask(task);
                   }}
-                  createdAt={formatTaskDate(task.createdAt as string)}
+                  createdAt={formatDate(task.createdAt as string)}
                 />
               ))}
           </Column>

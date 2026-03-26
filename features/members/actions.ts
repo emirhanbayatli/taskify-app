@@ -140,7 +140,7 @@ export async function updateInvitationStatus(userId: string, inviteId: string) {
   }
 }
 
-export async function removeMemberToWorkspace(
+export async function removeMemberToWorkspace( //TODO: Kullanicilari kaldirirken 1 kullanici degil tum kullanicilar kalkiyor duzeltilmesi gerek
   memberId: string,
   workspaceId: string,
 ) {

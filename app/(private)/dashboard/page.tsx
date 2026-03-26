@@ -2,7 +2,7 @@
 import MiniTaskCard from "@/components/MiniTaskCard";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { getTaskWithMemberId } from "@/features/tasks/action";
-import { formatTaskDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { ListTodo } from "lucide-react";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
@@ -85,7 +85,7 @@ export default function Dashboard() {
                     members={task.members || []}
                     workspaceId={task.workspaceId}
                     projectId={task.projectId}
-                    createdAt={formatTaskDate(task.createdAt)}
+                    createdAt={formatDate(task.createdAt)}
                   />
                 </Link>
               </div>

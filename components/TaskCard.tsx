@@ -4,13 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Share2, X, Save, RotateCcw, Trash2 } from "lucide-react";
-import { Task } from "@/lib/types";
-import { useState } from "react";
+import { Comment, Task } from "@/lib/types";
+import { useState, useEffect } from "react";
 import { deleteTask, updateTask } from "@/features/tasks/action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { addCommentToTask } from "@/features/comment/action";
+import {
+  addCommentToTask,
+  deleteCommentFromTask,
+  updateCommentInTask,
+} from "@/features/comment/action";
 import { useAuth } from "@/features/auth/AuthProvider";
+import { formatDate } from "@/lib/utils";
 
 export default function TaskCard({
   taskTitle,
@@ -30,9 +35,16 @@ export default function TaskCard({
   const [tempProjectName, setTempProjectName] = useState(projectName);
   const [tempProjectStatus, setProjectStatus] = useState(projectStatus ?? "");
   const [commentMessage, setCommentMessage] = useState("");
+  const [localComments, setLocalComments] = useState(comments || []);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editingMessage, setEditingMessage] = useState("");
 
   const router = useRouter();
   const { user } = useAuth();
+
+  useEffect(() => {
+    setLocalComments(comments || []);
+  }, [comments]);
 
   const handleUpdateTask = async () => {
     const result = await updateTask({
@@ -73,25 +85,69 @@ export default function TaskCard({
 
   const handleAddComment = async () => {
     if (!commentMessage.trim()) return;
-    if (!user) {
-      toast.error("You must be logged in to comment");
-      return;
-    }
+
+    const newComment = {
+      author: {
+        id: user?.id as string,
+        fullName: user?.fullName as string,
+        email: user?.email as string,
+      },
+      message: commentMessage,
+      date: new Date().toISOString(),
+    };
 
     const result = await addCommentToTask({
       taskId: id as string,
-      author: {
-        id: user.id as string,
-        fullName: user.fullName,
-        email: user.email as string,
-      },
-      message: commentMessage,
+      ...newComment,
       date: new Date().toISOString(),
     });
 
     if (result.success) {
       toast.success(result.message);
+
+      setLocalComments((prev) => [
+        ...prev,
+        { ...newComment, id: String(Date.now()), taskId: id as string },
+      ]);
+
       setCommentMessage("");
+    } else {
+      toast.error(result.message);
+    }
+  };
+
+  const handleDeleteComment = async (taskId: string, commentId: string) => {
+    console.log(
+      "Deleting comment with ID:",
+      commentId,
+      "from task ID:",
+      taskId,
+    );
+    const result = await deleteCommentFromTask(taskId, commentId);
+    if (result.success) {
+      toast.success(result.message);
+      setLocalComments((prev) =>
+        prev.filter((comment) => String(comment.id) !== commentId),
+      );
+    } else {
+      toast.error(result.message);
+    }
+  };
+
+  const handleUpdateComment = async (taskId: string, commentId: string) => {
+    const result = await updateCommentInTask(taskId, commentId, editingMessage);
+
+    if (result.success) {
+      toast.success(result.message);
+
+      setLocalComments((prev) =>
+        prev.map((c) =>
+          String(c.id) === commentId ? { ...c, message: editingMessage } : c,
+        ),
+      );
+
+      setEditingCommentId(null);
+      setEditingMessage("");
     } else {
       toast.error(result.message);
     }
@@ -266,19 +322,19 @@ export default function TaskCard({
             <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
               Comments
               <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
-                {comments?.length || 0}
+                {localComments?.length || 0}
               </span>
             </h3>
 
             <ScrollArea className="flex-1 overflow-y-auto pr-4 mb-4 custom-scrollbar">
               <div className="space-y-4">
-                {comments?.map((comment) => (
-                  <div key={comment.id} className="group flex gap-3">
+                {[...localComments].reverse().map((comment: Comment, index) => (
+                  <div key={comment.id ?? index} className="group flex gap-3">
                     <Avatar className="w-8 h-8 shrink-0">
                       <AvatarFallback className="text-[10px]">
                         {comment.author.fullName
                           ?.split(" ")
-                          .map((n) => n[0])
+                          .map((n: string) => n[0])
                           .join("")
                           .toUpperCase()}
                       </AvatarFallback>
@@ -289,12 +345,73 @@ export default function TaskCard({
                           {comment.author.fullName}
                         </span>
                         <span className="text-[10px] text-gray-400">
-                          {comment.date}
+                          {formatDate(comment.date)}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-600 mt-1 bg-gray-50 p-2 rounded-lg group-hover:bg-gray-100 transition-colors">
-                        {comment.message}
-                      </p>
+                      {editingCommentId === String(comment.id) ? (
+                        <div className="mt-1 space-y-2">
+                          <Textarea
+                            value={editingMessage}
+                            onChange={(e) => setEditingMessage(e.target.value)}
+                            className="text-xs min-h-[60px]"
+                          />
+
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                              onClick={() =>
+                                handleUpdateComment(
+                                  id as string,
+                                  String(comment.id),
+                                )
+                              }
+                            >
+                              Save
+                            </Button>
+
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setEditingCommentId(null);
+                                setEditingMessage("");
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-gray-600 mt-1 bg-gray-50 p-2 rounded-lg group-hover:bg-gray-100 transition-colors">
+                          {comment.message}
+                        </p>
+                      )}
+                      {comment.author.id === user?.id && (
+                        <div className="flex gap-2 mt-1">
+                          <button
+                            onClick={() => {
+                              setEditingCommentId(String(comment.id));
+                              setEditingMessage(comment.message);
+                            }}
+                            className="text-[10px] text-blue-500 hover:underline"
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            onClick={() =>
+                              handleDeleteComment(
+                                id as string,
+                                String(comment.id),
+                              )
+                            }
+                            className="text-[10px] text-red-500 hover:underline"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
