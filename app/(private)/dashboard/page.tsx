@@ -33,12 +33,12 @@ export default function Dashboard() {
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             Welcome back, {user?.fullName?.split(" ")[0]}!
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-slate-500 mt-1">
             You have{" "}
             <span className="text-foreground font-semibold">
               {tasks.length} tasks
@@ -48,7 +48,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
           <div className={`p-3 rounded-xl bg-blue-50`}>
             <ListTodo className="text-blue-600" />
@@ -64,7 +64,7 @@ export default function Dashboard() {
 
       <div>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-slate-800">
             My Recent Tasks
           </h2>
         </div>

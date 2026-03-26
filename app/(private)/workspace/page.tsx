@@ -131,7 +131,7 @@ export default function Workspace() {
                 </div>
               ) : (
                 <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-2xl bg-white/50">
-                  <p className="text-slate-400">
+                  <p className="text-muted-foreground italic">
                     You haven't created any workspaces yet.
                   </p>
                 </div>
@@ -162,7 +162,7 @@ export default function Workspace() {
                 </div>
               ) : (
                 <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-2xl bg-white/50">
-                  <p className="text-slate-400">
+                  <p className="text-muted-foreground italic">
                     No workspaces shared with you yet.
                   </p>
                 </div>
