@@ -117,12 +117,6 @@ export default function TaskCard({
   };
 
   const handleDeleteComment = async (taskId: string, commentId: string) => {
-    console.log(
-      "Deleting comment with ID:",
-      commentId,
-      "from task ID:",
-      taskId,
-    );
     const result = await deleteCommentFromTask(taskId, commentId);
     if (result.success) {
       toast.success(result.message);

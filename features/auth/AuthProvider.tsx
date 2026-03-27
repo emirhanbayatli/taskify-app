@@ -70,7 +70,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       toast.success("Account created successfully!");
     } catch (err: any) {
-      console.log(err);
       toast.error(getErrorMessageFromCode(err.code));
     } finally {
       setLoading(false);

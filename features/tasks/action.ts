@@ -11,6 +11,7 @@ import {
   query,
   updateDoc,
   where,
+  writeBatch,
 } from "firebase/firestore";
 
 export async function createTask({
@@ -20,6 +21,7 @@ export async function createTask({
   projectName,
   columnId,
   selectedMembers,
+  order,
 }: Task) {
   try {
     await addDoc(collection(db, "tasks"), {
@@ -28,6 +30,7 @@ export async function createTask({
       workspaceId,
       projectName,
       columnId,
+      order,
       members: selectedMembers,
       memberIds: selectedMembers?.map((member: Member) => member.id),
       createdAt: new Date().toISOString(),
@@ -140,5 +143,25 @@ export async function getTaskWithMemberId(memberId: string) {
   } catch (error) {
     console.error(error);
     return [];
+  }
+}
+export async function updateTaskOrders(tasks: Task[]) {
+  try {
+    const batch = writeBatch(db);
+
+    tasks.forEach((task, index) => {
+      const ref = doc(db, "tasks", task.id as string);
+      batch.update(ref, {
+        order: index + 1,
+        columnId: task.columnId,
+      });
+    });
+
+    await batch.commit();
+
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false };
   }
 }

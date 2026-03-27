@@ -16,7 +16,7 @@ export default function TaskDetail() {
   async function fetchTaskWithId(id: string) {
     try {
       const result = await getTaskWithId(id);
-      console.log(result.data, "task detail result");
+
       if (result.success) {
         setTask(result.data as Task);
       } else {

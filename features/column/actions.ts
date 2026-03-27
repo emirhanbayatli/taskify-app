@@ -11,6 +11,7 @@ import {
   query,
   updateDoc,
   where,
+  writeBatch,
 } from "firebase/firestore";
 
 export async function createColumn({ title, order, workspaceId }: Column) {
@@ -80,3 +81,20 @@ export const getColumnByWorkspaceId = async (id: string) => {
     return [];
   }
 };
+export async function updateColumnOrders(columns: Column[]) {
+  try {
+    const batch = writeBatch(db);
+    columns.forEach((col, index) => {
+      const ref = doc(db, "column", col.id as string);
+
+      batch.update(ref, {
+        order: index + 1,
+      });
+    });
+
+    await batch.commit();
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
