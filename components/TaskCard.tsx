@@ -148,21 +148,20 @@ export default function TaskCard({
   };
 
   return (
-    // TODO: Mobil gorunumu duzeltilecek
-    <div className="fixed inset-0 z-[50]  flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-hidden transition-all">
-      <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-4xl border border-gray-200 animate-in fade-in zoom-in duration-200">
+    <div className="fixed inset-0 z-[50] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4 transition-all">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl p-5 sm:p-6 w-full max-w-4xl border border-gray-200 animate-in fade-in slide-in-from-bottom-4 sm:zoom-in duration-200 max-h-[95vh] overflow-y-auto">
         <div className="flex justify-between items-start gap-2">
           <div className="flex flex-wrap gap-2">
             {isEditing ? (
               <>
                 <input
-                  className="text-sm font-medium px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 focus:ring-2 focus:ring-blue-500 outline-none w-32"
+                  className="text-xs sm:text-sm font-medium px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 focus:ring-2 focus:ring-blue-500 outline-none w-24 sm:w-32"
                   value={tempProjectStatus}
                   onChange={(e) => setProjectStatus(e.target.value)}
                   placeholder="Status..."
                 />
                 <input
-                  className="text-sm font-medium px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 focus:ring-2 focus:ring-indigo-500 outline-none w-32"
+                  className="text-xs sm:text-sm font-medium px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 focus:ring-2 focus:ring-indigo-500 outline-none w-24 sm:w-32"
                   value={tempProjectName}
                   onChange={(e) => setTempProjectName(e.target.value)}
                   placeholder="Project Name..."
@@ -172,13 +171,13 @@ export default function TaskCard({
               <>
                 <span
                   onClick={() => setIsEditing(true)}
-                  className="text-sm font-medium px-3 py-1 rounded-full bg-blue-100 text-blue-700"
+                  className="text-xs sm:text-sm font-medium px-3 py-1 rounded-full bg-blue-100 text-blue-700"
                 >
                   {tempProjectStatus || "No Status"}
                 </span>
                 <span
                   onClick={() => setIsEditing(true)}
-                  className="text-sm font-medium px-3 py-1 rounded-full bg-indigo-100 text-indigo-700"
+                  className="text-xs sm:text-sm font-medium px-3 py-1 rounded-full bg-indigo-100 text-indigo-700"
                 >
                   {tempProjectName}
                 </span>
@@ -186,13 +185,12 @@ export default function TaskCard({
             )}
           </div>
 
-          <div className="flex items-center gap-2 text-muted-foreground">
+          <div className="flex items-center gap-1 sm:gap-2 text-muted-foreground shrink-0">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => handleDeleteTask(id as string)}
               className="h-8 w-8 rounded-full hover:bg-red-50 hover:text-red-600"
-              aria-label="Share"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -201,14 +199,13 @@ export default function TaskCard({
               variant="ghost"
               size="icon"
               className="h-8 w-8 rounded-full"
-              aria-label="Share"
             >
               <Share2 className="h-4 w-4" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-full hover:bg-red-50 hover:text-red-600"
+              className="h-8 w-8 rounded-full hover:bg-gray-100"
               onClick={() => {
                 if (onClose) onClose();
                 router.push(`/workspace/${workspaceId}`);
@@ -219,19 +216,19 @@ export default function TaskCard({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 border-t border-gray-100 mt-6 pt-6 gap-8">
-          <div className="col-span-2 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 border-t border-gray-100 mt-6 pt-6 gap-6 md:gap-8">
+          <div className="col-span-1 md:col-span-2 space-y-6">
             <div>
               {isEditing ? (
                 <input
-                  className="text-2xl font-bold text-gray-900 border-b-2 border-blue-500 outline-none w-full bg-transparent pb-1"
+                  className="text-xl sm:text-2xl font-bold text-gray-900 border-b-2 border-blue-500 outline-none w-full bg-transparent pb-1"
                   value={tempTitle}
                   onChange={(e) => setTempTitle(e.target.value)}
                   autoFocus
                 />
               ) : (
                 <h2
-                  className="text-2xl font-bold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
+                  className="text-xl sm:text-2xl font-bold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors leading-tight"
                   onClick={() => setIsEditing(true)}
                 >
                   {tempTitle}
@@ -239,8 +236,8 @@ export default function TaskCard({
               )}
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <span className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-wider">
                 Members:
               </span>
               <div className="flex -space-x-2">
@@ -265,21 +262,21 @@ export default function TaskCard({
             </div>
 
             <div className="space-y-2">
-              <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+              <span className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-wider">
                 Description
               </span>
               {isEditing ? (
-                <ScrollArea className="h-32 w-full rounded-md border border-transparent hover:border-gray-100 p-2 transition-all cursor-pointer">
+                <div className="w-full rounded-md border border-transparent hover:border-gray-100 transition-all">
                   <Textarea
                     value={tempDesc}
                     onChange={(e) => setTempDesc(e.target.value)}
-                    className="min-h-[150px] focus:ring-2 focus:ring-blue-500 border-gray-200 resize-none"
+                    className="min-h-[120px] sm:min-h-[150px] focus:ring-2 focus:ring-blue-500 border-gray-200 resize-none text-sm"
                     placeholder="Task description..."
                   />
-                </ScrollArea>
+                </div>
               ) : (
                 <ScrollArea
-                  className="h-32 w-full rounded-md border border-transparent hover:border-gray-100 p-2 transition-all cursor-pointer"
+                  className="h-auto max-h-40 w-full rounded-md border border-transparent hover:border-gray-100 p-2 transition-all cursor-pointer"
                   onClick={() => setIsEditing(true)}
                 >
                   <p className="text-gray-600 leading-relaxed text-sm">
@@ -292,9 +289,9 @@ export default function TaskCard({
               <div className="flex gap-3 pt-2">
                 <Button
                   onClick={handleUpdateTask}
-                  className="bg-indigo-600 hover:bg-indigo-700 shadow-sm gap-2"
+                  className="bg-indigo-600 hover:bg-indigo-700 shadow-sm gap-2 flex-1 sm:flex-none"
                 >
-                  <Save className="h-4 w-4" /> Save Changes
+                  <Save className="h-4 w-4" /> Save
                 </Button>
                 <Button
                   variant="outline"
@@ -305,7 +302,7 @@ export default function TaskCard({
                     setTempProjectName(projectName);
                     setProjectStatus(projectStatus || "");
                   }}
-                  className="gap-2"
+                  className="gap-2 flex-1 sm:flex-none"
                 >
                   <RotateCcw className="h-4 w-4" /> Cancel
                 </Button>
@@ -313,7 +310,7 @@ export default function TaskCard({
             )}
           </div>
 
-          <div className="flex flex-col h-[400px]">
+          <div className="flex flex-col h-full min-h-[350px] md:h-[450px]">
             <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
               Comments
               <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">
@@ -334,12 +331,12 @@ export default function TaskCard({
                           .toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-xs text-gray-900">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-medium text-xs text-gray-900 truncate">
                           {comment.author.fullName}
                         </span>
-                        <span className="text-[10px] text-gray-400">
+                        <span className="text-[10px] text-gray-400 shrink-0">
                           {formatDate(
                             comment.updatedAt || comment.createdAt || "",
                           )}
@@ -352,7 +349,6 @@ export default function TaskCard({
                             onChange={(e) => setEditingMessage(e.target.value)}
                             className="text-xs min-h-[60px]"
                           />
-
                           <div className="flex gap-2">
                             <Button
                               size="sm"
@@ -366,7 +362,6 @@ export default function TaskCard({
                             >
                               Save
                             </Button>
-
                             <Button
                               size="sm"
                               variant="outline"
@@ -380,12 +375,12 @@ export default function TaskCard({
                           </div>
                         </div>
                       ) : (
-                        <p className="text-xs text-gray-600 mt-1 bg-gray-50 p-2 rounded-lg group-hover:bg-gray-100 transition-colors">
+                        <p className="text-xs text-gray-600 mt-1 bg-gray-50 p-2 rounded-lg group-hover:bg-gray-100 transition-colors break-words">
                           {comment.message}
                         </p>
                       )}
                       {comment.author.id === user?.id && (
-                        <div className="flex gap-2 mt-1">
+                        <div className="flex gap-3 mt-1">
                           <button
                             onClick={() => {
                               setEditingCommentId(String(comment.id));
@@ -395,7 +390,6 @@ export default function TaskCard({
                           >
                             Edit
                           </button>
-
                           <button
                             onClick={() =>
                               handleDeleteComment(
@@ -415,16 +409,16 @@ export default function TaskCard({
               </div>
             </ScrollArea>
 
-            <div className="space-y-2 mt-auto pt-2 border-t border-gray-50">
+            <div className="space-y-2 mt-auto pt-2 border-t border-gray-100">
               <Textarea
                 placeholder="Write a comment..."
-                className="text-xs min-h-[80px] focus:ring-indigo-500 resize-none"
+                className="text-sm min-h-[80px] focus:ring-indigo-500 resize-none"
                 value={commentMessage}
                 onChange={(e) => setCommentMessage(e.target.value)}
               />
               <Button
                 size="sm"
-                className="w-full bg-indigo-600 hover:bg-indigo-700"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 py-4 h-10"
                 onClick={() => handleAddComment()}
               >
                 Post Comment
