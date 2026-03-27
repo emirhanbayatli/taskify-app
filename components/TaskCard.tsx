@@ -154,6 +154,7 @@ export default function TaskCard({
   };
 
   return (
+    // TODO: Mobil gorunumu duzeltilecek
     <div className="fixed inset-0 z-[50]  flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-hidden transition-all">
       <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-4xl border border-gray-200 animate-in fade-in zoom-in duration-200">
         <div className="flex justify-between items-start gap-2">

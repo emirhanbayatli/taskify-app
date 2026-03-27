@@ -7,6 +7,8 @@ import {
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 import { toast } from "sonner";
 import { getErrorMessageFromCode } from "@/lib/utils";
@@ -98,6 +100,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      setLoading(true);
+
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+
+      const firebaseUser = result.user;
+
+      if (!firebaseUser) return;
+
+      const userRef = doc(db, "users", firebaseUser.uid);
+      const userSnap = await getDoc(userRef);
+
+      let fullName = "";
+
+      if (!userSnap.exists()) {
+        fullName = firebaseUser.displayName || "";
+
+        await setDoc(userRef, {
+          fullName,
+          email: firebaseUser.email,
+          createdAt: new Date(),
+          updatedAt: new Date().toISOString(),
+          image: "", // TODO: Add default image URL here and add a dynamic image link upload feature in the future
+          role: "user",
+        });
+      } else {
+        fullName = userSnap.data()?.fullName || "";
+      }
+
+      setUser({
+        email: firebaseUser.email,
+        id: firebaseUser.uid,
+        fullName,
+      });
+
+      toast.success("Logged in with Google successfully!");
+    } catch (err: any) {
+      toast.error(getErrorMessageFromCode(err.code));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -107,6 +154,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signUp,
         logout,
         resetPassword,
+        signInWithGoogle,
       }}
     >
       {children}

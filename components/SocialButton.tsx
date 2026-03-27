@@ -2,13 +2,20 @@ import React from "react";
 
 interface SocialButtonProps {
   provider: "google" | "github";
+  signInGoogleBtn?: () => void;
 }
 
-export const SocialButton: React.FC<SocialButtonProps> = ({ provider }) => {
+export const SocialButton: React.FC<SocialButtonProps> = ({
+  provider,
+  signInGoogleBtn,
+}) => {
   const isGoogle = provider === "google";
 
   return (
-    <button className="flex items-center justify-center gap-2.5 h-11 px-4 bg-white/5 border border-white/10 rounded-lg text-sm font-bold text-white hover:bg-white/10 transition-all active:scale-[0.97]">
+    <button
+      onClick={signInGoogleBtn}
+      className="flex items-center justify-center gap-2.5 h-11 px-4 bg-white border border-gray-300 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all shadow-sm active:scale-[0.97]"
+    >
       {isGoogle ? (
         <svg
           className="w-5 h-5"

@@ -15,7 +15,7 @@ interface AuthFormProps {
   type: "login" | "register" | "resetPassword";
 }
 export function AuthForm({ type }: AuthFormProps) {
-  const { login, signUp, resetPassword } = useAuth();
+  const { login, signUp, resetPassword, signInWithGoogle } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const {
     register,
@@ -24,19 +24,21 @@ export function AuthForm({ type }: AuthFormProps) {
   } = useForm<Auth>({ mode: "all" });
 
   return (
-    <div className="w-full max-w-[480px] bg-[#1A2026] rounded-2xl border border-dark-border shadow-2xl p-8 md:p-12 flex flex-col gap-8">
+    <div className="w-full max-w-[480px] bg-white rounded-2xl border border-gray-200 shadow-xl p-8 md:p-12 flex flex-col gap-8">
       <div className="text-center flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-white">Taskify</h1>
-        <h2 className="text-xl font-semibold text-white">
+        <h1 className="text-2xl font-bold text-gray-900">Taskify</h1>
+        <h2 className="text-xl font-semibold text-gray-900">
           {type == "login" ? "Welcome Back!" : "Welcome to Taskify!"}
         </h2>
-        <p className="text-sm text-white">Manage your projects with clarity</p>
+        <p className="text-sm text-gray-500">
+          Manage your projects with clarity
+        </p>
       </div>
 
       {type != "resetPassword" ? (
         <div className="flex flex-col gap-6">
-          <SocialButton provider="google" />
-          <span className="text-center text-[10px] text-white font-bold uppercase text-dark-textMuted">
+          <SocialButton provider="google" signInGoogleBtn={signInWithGoogle} />
+          <span className="text-center text-[10px] text-gray-400 font-bold uppercase">
             Or continue with
           </span>
         </div>
@@ -58,8 +60,9 @@ export function AuthForm({ type }: AuthFormProps) {
       >
         {type === "register" && (
           <div className="flex flex-col gap-2">
-            <label className="text-sm text-white/90">Full Name</label>
-
+            <label className="text-sm font-medium text-gray-700">
+              Full Name
+            </label>
             <input
               {...register("fullName", {
                 required: "Full name is required!",
@@ -78,16 +81,20 @@ export function AuthForm({ type }: AuthFormProps) {
               })}
               type="text"
               placeholder="John Doe"
-              className="h-12 px-4 rounded-lg bg-dark-input border text-white focus:ring-1 focus:ring-primary outline-none"
+              className="h-12 px-4 rounded-lg bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition-all"
             />
             {errors.fullName && (
-              <p className="text-red-500">{errors.fullName.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.fullName.message}
+              </p>
             )}
           </div>
         )}
 
         <div className="flex flex-col gap-2">
-          <label className="text-sm text-white/90">Email Address</label>
+          <label className="text-sm font-medium text-gray-700">
+            Email Address
+          </label>
           <input
             {...register("email", {
               required: "Email is required!",
@@ -106,16 +113,18 @@ export function AuthForm({ type }: AuthFormProps) {
             })}
             type="email"
             placeholder="name@company.com"
-            className="h-12 px-4 rounded-lg bg-dark-input border  text-white focus:ring-1 focus:ring-primary outline-none"
+            className="h-12 px-4 rounded-lg bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition-all"
           />
           {errors.email && (
-            <p className="text-red-500">{errors.email.message}</p>
+            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
           )}
         </div>
 
         {type != "resetPassword" ? (
           <div className="flex flex-col gap-2">
-            <label className="text-sm text-white/90">Password</label>
+            <label className="text-sm font-medium text-gray-700">
+              Password
+            </label>
             <div className="relative">
               <input
                 {...register("password", {
@@ -131,24 +140,24 @@ export function AuthForm({ type }: AuthFormProps) {
                 })}
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
-                className="h-12 w-full pl-4 pr-12 rounded-lg bg-dark-input border text-white focus:ring-1 focus:ring-primary outline-none"
+                className="h-12 w-full pl-4 pr-12 rounded-lg bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition-all"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((p) => !p)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900 transition"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
-
-              {errors.password && (
-                <p className="text-red-500">{errors.password.message}</p>
-              )}
             </div>
-            <div className="flex justify-between items-center text-sm">
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password.message}</p>
+            )}
+
+            <div className="flex justify-end items-center text-sm mt-1">
               <Link
                 href="/reset-password"
-                className="text-white/90 font-medium"
+                className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
               >
                 Forgot password?
               </Link>
@@ -156,7 +165,7 @@ export function AuthForm({ type }: AuthFormProps) {
           </div>
         ) : null}
 
-        <button className="h-12 text-white/90 font-bold rounded-lg bg-indigo-600 hover:bg-indigo-700 transition">
+        <button className="h-12 mt-2 text-white font-bold rounded-lg bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm">
           {type == "login"
             ? "Sign In"
             : type == "resetPassword"
@@ -165,7 +174,7 @@ export function AuthForm({ type }: AuthFormProps) {
         </button>
       </form>
 
-      <p className="text-center text-sm text-white/90 ">
+      <p className="text-center text-sm text-gray-600">
         {type == "login"
           ? "Don't have an account?"
           : type == "resetPassword"
@@ -173,7 +182,7 @@ export function AuthForm({ type }: AuthFormProps) {
             : "Already have an account?"}
         <Link
           href={type === "login" ? "/register" : "/login"}
-          className="ml-1 font-bold text-white/90"
+          className="ml-1 font-bold text-indigo-600 hover:text-indigo-700 transition-colors"
         >
           {type === "login" ? "Sign Up" : "Sign In"}
         </Link>

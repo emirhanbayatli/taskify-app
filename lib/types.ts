@@ -49,6 +49,7 @@ export interface Task {
   columnId?: string;
   createdAt?: string;
   selectedMembers?: Member[];
+  order?: number;
 }
 export interface Workspace {
   workspaceDesc: string;
@@ -70,4 +71,5 @@ export type AuthContextType = {
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
 };
