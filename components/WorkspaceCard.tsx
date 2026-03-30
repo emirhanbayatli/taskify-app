@@ -2,19 +2,10 @@
 import Link from "next/link";
 import { Edit, Trash2Icon } from "lucide-react";
 import { useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { deleteWorkspace, updateWorkspace } from "@/features/workspace/actions";
 import { InputModal } from "./InputModal";
 import { toast } from "sonner";
+import ConfirmAlertDialog from "./ConfirmAlertDialog";
 
 interface WorkspaceCardProps {
   id: string;
@@ -92,25 +83,14 @@ export const WorkspaceCard = ({
           </p>
         </div>
       </Link>
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Are you sure you want to delete this workspace?
-            </AlertDialogTitle>
-
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              workspace.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmAlertDialog
+        open={open}
+        onOpenChange={setOpen}
+        title="Are you sure you want to delete this workspace?"
+        description="This action cannot be undone. This will permanently delete the workspace."
+        confirmText="Delete"
+        onConfirm={handleDelete}
+      />
       {openEditModal && (
         <InputModal
           setOpenModal={setOpenEditModal}

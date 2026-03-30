@@ -16,6 +16,7 @@ import {
 } from "@/features/comment/action";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { formatDate } from "@/lib/utils";
+import ConfirmAlertDialog from "./ConfirmAlertDialog";
 
 export default function TaskCard({
   taskTitle,
@@ -38,6 +39,8 @@ export default function TaskCard({
   const [localComments, setLocalComments] = useState(comments || []);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editingMessage, setEditingMessage] = useState("");
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const router = useRouter();
   const { user } = useAuth();
@@ -63,13 +66,20 @@ export default function TaskCard({
   };
 
   const handleDeleteTask = async (id: string) => {
-    const result = await deleteTask(id);
-    if (result.success) {
-      toast.success(result.message);
-      setIsEditing(false);
-      if (onClose) onClose();
-    } else {
-      toast.error(result.message);
+    setDeleteLoading(true);
+
+    try {
+      const result = await deleteTask(id);
+
+      if (result.success) {
+        toast.success(result.message);
+        setIsEditing(false);
+        onClose?.();
+      } else {
+        toast.error(result.message);
+      }
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -189,7 +199,7 @@ export default function TaskCard({
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => handleDeleteTask(id as string)}
+              onClick={() => setDeleteOpen(true)}
               className="h-8 w-8 rounded-full hover:bg-red-50 hover:text-red-600"
             >
               <Trash2 className="h-4 w-4" />
@@ -427,6 +437,15 @@ export default function TaskCard({
           </div>
         </div>
       </div>
+      <ConfirmAlertDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title="Delete this task?"
+        description="This action cannot be undone. The task and all related data will be permanently deleted."
+        confirmText={deleteLoading ? "Deleting..." : "Delete"}
+        onConfirm={() => handleDeleteTask(id as string)}
+        loading={deleteLoading}
+      />
     </div>
   );
 }

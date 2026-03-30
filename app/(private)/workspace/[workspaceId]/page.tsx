@@ -50,6 +50,7 @@ import {
 import { SortableColumn } from "@/components/SortableColumn";
 import { SortableTask } from "@/components/SortableTask";
 import { useWorkspaceDnd } from "@/features/hooks/dnd-kit-hooks";
+import ConfirmAlertDialog from "@/components/ConfirmAlertDialog";
 
 export default function Workspace() {
   const params = useParams();
@@ -70,6 +71,9 @@ export default function Workspace() {
     useState(false);
   const [activeColumn, setActiveColumn] = useState<ColumnType | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [deleteColumnId, setDeleteColumnId] = useState<string | null>(null);
+  const [openDeleteColumnDialog, setOpenDeleteColumnDialog] = useState(false);
+
   const columnTasks = tasks.filter((t) => t.columnId === columnId);
 
   const sensors = useSensors(
@@ -132,15 +136,20 @@ export default function Workspace() {
     }
   }
 
-  async function handleDeleteColumn(columnId: string, workspaceId: string) {
-    const result = await deleteColumn(columnId, workspaceId);
+  const handleConfirmDeleteColumn = async () => {
+    if (!deleteColumnId) return;
+
+    const result = await deleteColumn(deleteColumnId);
+
     if (result.success) {
       toast.success(result.message);
       await fetchAllData();
     } else {
       toast.error(result.message);
     }
-  }
+
+    setDeleteColumnId(null);
+  };
 
   async function handleUpdateColumn(
     data: { field1: string },
@@ -216,7 +225,7 @@ export default function Workspace() {
   });
 
   return (
-    <div>
+    <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden">
       {workspace ? (
         <WorkspaceHeader
           name={workspace?.workspaceName}
@@ -243,7 +252,7 @@ export default function Workspace() {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-4 p-4 overflow-x-auto min-h-screen">
+        <div className="flex-1 flex gap-4 p-4 overflow-x-auto items-start">
           <SortableContext
             items={columns.map((c) => c.id as string)}
             strategy={horizontalListSortingStrategy}
@@ -261,8 +270,9 @@ export default function Workspace() {
                       setColumnId(col.id as string);
                       setUpdateOpenModal(true);
                     }}
-                    onDelete={async () => {
-                      await handleDeleteColumn(col.id as string, workspaceId);
+                    onDelete={() => {
+                      setDeleteColumnId(col.id as string);
+                      setOpenDeleteColumnDialog(true);
                     }}
                     onAddTask={() => {
                       setColumnId(col.id as string);
@@ -294,7 +304,6 @@ export default function Workspace() {
               );
             })}
           </SortableContext>
-
           <div className="flex flex-col items-start min-w-[250px]">
             <Button
               variant="ghost"
@@ -430,6 +439,16 @@ export default function Workspace() {
           }}
         />
       )}
+      <ConfirmAlertDialog
+        open={openDeleteColumnDialog}
+        onOpenChange={setOpenDeleteColumnDialog}
+        title="Delete this column?"
+        description="This action cannot be undone. All tasks inside this column will also be affected."
+        confirmText="Delete"
+        cancelText="Cancel"
+        loading={false}
+        onConfirm={handleConfirmDeleteColumn}
+      />
     </div>
   );
 }
