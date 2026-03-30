@@ -11,6 +11,7 @@ import {
   query,
   updateDoc,
   where,
+  writeBatch,
 } from "firebase/firestore";
 import { getUserWithId } from "../members/actions";
 
@@ -67,8 +68,35 @@ export const getWorkspacesByOwner = async (ownerId: string) => {
 
 export const deleteWorkspace = async (id: string) => {
   try {
-    await deleteDoc(doc(db, "workspace", id));
-    return { success: true, message: "Workspace deleted successfully!" };
+    const batch = writeBatch(db);
+
+    const columnsRef = collection(db, "column");
+    const columnsQuery = query(columnsRef, where("workspaceId", "==", id));
+    const columnsSnap = await getDocs(columnsQuery);
+
+    const columnIds: string[] = [];
+
+    for (const columnDoc of columnsSnap.docs) {
+      const columnId = columnDoc.id;
+      columnIds.push(columnId);
+
+      const tasksRef = collection(db, "tasks");
+      const tasksQuery = query(tasksRef, where("columnId", "==", columnId));
+      const tasksSnap = await getDocs(tasksQuery);
+
+      tasksSnap.forEach((taskDoc) => {
+        batch.delete(taskDoc.ref);
+      });
+
+      batch.delete(columnDoc.ref);
+    }
+
+    const workspaceRef = doc(db, "workspace", id);
+    batch.delete(workspaceRef);
+
+    await batch.commit();
+
+    return { success: true, message: "Workspace deleted with all data!" };
   } catch (error) {
     console.error(error);
     return { success: false, message: "Delete failed" };

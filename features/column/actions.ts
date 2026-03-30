@@ -50,12 +50,26 @@ export const updateColumn = async ({
   }
 };
 
-export const deleteColumn = async (id: string, workspaceId: string) => {
+export const deleteColumn = async (id: string) => {
   try {
-    await deleteDoc(doc(db, "column", id));
+    const tasksRef = collection(db, "tasks");
+    const q = query(tasksRef, where("columnId", "==", id));
+    const snapshot = await getDocs(q);
+
+    const batch = writeBatch(db);
+
+    snapshot.forEach((taskDoc) => {
+      batch.delete(taskDoc.ref);
+    });
+
+    const columnRef = doc(db, "column", id);
+    batch.delete(columnRef);
+
+    await batch.commit();
 
     return { success: true, message: "Column deleted!" };
   } catch (error) {
+    console.error(error);
     return { success: false, message: "Delete failed" };
   }
 };
