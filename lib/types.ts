@@ -62,7 +62,10 @@ export type UserType = {
   fullName: string;
   email: string | null;
   id: string | null;
+  type?: AuthProviderType;
 } | null;
+
+export type AuthProviderType = "google" | "emailPassword";
 
 export type AuthContextType = {
   user: UserType;

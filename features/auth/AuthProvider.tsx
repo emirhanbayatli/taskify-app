@@ -31,6 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: firebaseUser.email,
           id: firebaseUser.uid,
           fullName: userData?.fullName || "",
+          type: userData?.type,
         });
       } else {
         setUser(null);
@@ -66,6 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         image: "", // TODO: Add default image URL here and add a dynamic image link upload feature in the future
         fullName: fullName,
         role: "user",
+        type: "emailPassword",
       });
 
       toast.success("Account created successfully!");
@@ -125,6 +127,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           updatedAt: new Date().toISOString(),
           image: "", // TODO: Add default image URL here and add a dynamic image link upload feature in the future
           role: "user",
+          type: "google",
         });
       } else {
         fullName = userSnap.data()?.fullName || "";
