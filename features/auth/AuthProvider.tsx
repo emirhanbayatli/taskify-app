@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email: email,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        image: "", // TODO: Add default image URL here and add a dynamic image link upload feature in the future
+        image: "",
         fullName: fullName,
         role: "user",
         type: "emailPassword",
@@ -125,7 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: firebaseUser.email,
           createdAt: new Date(),
           updatedAt: new Date().toISOString(),
-          image: "", // TODO: Add default image URL here and add a dynamic image link upload feature in the future
+          image: "",
           role: "user",
           type: "google",
         });

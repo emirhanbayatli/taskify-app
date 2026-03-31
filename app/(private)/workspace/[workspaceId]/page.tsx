@@ -194,10 +194,18 @@ export default function Workspace() {
 
   async function handleAddMemberToTask(taskId: string, member: Member) {
     const result = await addMemberToTask({ taskId, member });
+
     if (result.success) {
       toast.success(result.message);
-      setOpenAddMemberToTaskModal(false);
       await fetchAllData();
+      setSelectedTask((prev) =>
+        prev
+          ? {
+              ...prev,
+              members: [...(prev.members || []), member],
+            }
+          : prev,
+      );
     } else {
       toast.error(result.message);
     }
@@ -207,9 +215,15 @@ export default function Workspace() {
     const result = await removeMemberToTask(member, taskId);
     if (result.success) {
       toast.success(result.message);
-      setOpenAddMemberToTaskModal(false);
-      setSelectedTask(null);
       await fetchAllData();
+      setSelectedTask((prev) =>
+        prev
+          ? {
+              ...prev,
+              members: prev.members?.filter((m) => m.id !== member.id),
+            }
+          : prev,
+      );
     } else {
       toast.error(result.message);
     }
@@ -429,7 +443,6 @@ export default function Workspace() {
           currentTaskMembers={selectedTask?.members as Member[]}
           onSelectMember={async (member: Member) => {
             await handleAddMemberToTask(selectedTask?.id as string, member);
-            setSelectedTask(null);
           }}
           onRemoveMember={async (member: Member) => {
             await handleRemoveMemberFromTask(

@@ -140,7 +140,7 @@ export async function updateInvitationStatus(userId: string, inviteId: string) {
   }
 }
 
-export async function removeMemberToWorkspace( //TODO: Kullanicilari kaldirirken 1 kullanici degil tum kullanicilar kalkiyor duzeltilmesi gerek
+export async function removeMemberToWorkspace(
   memberId: string,
   workspaceId: string,
 ) {
@@ -170,16 +170,21 @@ export async function removeMemberToWorkspace( //TODO: Kullanicilari kaldirirken
 export async function removeMemberToTask(member: Member, taskId: string) {
   try {
     const taskRef = doc(db, "tasks", taskId);
+
     const snap = await getDoc(taskRef);
+    if (!snap.exists()) {
+      return { success: false, message: "Task not found" };
+    }
+
     const data = snap.data();
 
-    const updatedMembers = data?.members.filter(
-      (member: Member) => member.id !== member.id,
-    );
+    const members = Array.isArray(data?.members) ? data.members : [];
+
+    const updatedMembers = members.filter((m: Member) => m.id !== member.id);
 
     await updateDoc(taskRef, {
       members: updatedMembers,
-      memberIds: arrayRemove(member.id),
+      memberIds: updatedMembers,
     });
 
     return { success: true, message: "Member removed from task" };

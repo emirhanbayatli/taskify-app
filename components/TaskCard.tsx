@@ -168,7 +168,7 @@ export default function TaskCard({
                   className="text-xs sm:text-sm font-medium px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 focus:ring-2 focus:ring-blue-500 outline-none w-24 sm:w-32"
                   value={tempProjectStatus}
                   onChange={(e) => setProjectStatus(e.target.value)}
-                  placeholder="Status..."
+                  disabled
                 />
                 <input
                   className="text-xs sm:text-sm font-medium px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 focus:ring-2 focus:ring-indigo-500 outline-none w-24 sm:w-32"

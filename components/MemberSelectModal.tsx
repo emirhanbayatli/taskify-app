@@ -64,7 +64,6 @@ export function MemberSelectModal({
                   return (
                     <div
                       key={member.id}
-                      onClick={() => !alreadySelected && onSelectMember(member)}
                       className={
                         " group flex items-center justify-between p-3 rounded-xl transition-all duration-200"
                       }

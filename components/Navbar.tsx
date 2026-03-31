@@ -33,7 +33,7 @@ export default function Navbar() {
           Taskify
         </Link>
 
-        <div className="hidden md:flex items-center gap-2">
+        <div className="flex items-center gap-2">
           {loading ? (
             <>
               <div className="h-6 w-20 bg-slate-200 rounded-md animate-pulse" />
