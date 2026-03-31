@@ -59,7 +59,7 @@ export default function Home() {
           <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
           <div className="relative rounded-xl border border-slate-200/50 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 shadow-2xl overflow-hidden leading-none flex">
             <Image
-              src="/Screenshot.webp"
+              src="/exampleWorkspacePageScreenshot.png"
               width={1200}
               height={675}
               alt="Taskify Kanban Dashboard Preview"
