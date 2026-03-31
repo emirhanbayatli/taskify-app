@@ -39,6 +39,14 @@ export function getErrorMessageFromCode(code: string): string {
       return "Please log in again to perform this action.";
     case "auth/invalid-credential":
       return "The provided credential is invalid. Please try again.";
+    case "auth/wrong-password":
+      return "Current password is incorrect";
+    case "auth/weak-password":
+      return "Password should be at least 6 characters";
+    case "auth/requires-recent-login":
+      return "Please login again and try";
+    case "auth/wrong-password":
+      return "Current password is incorrect";
     default:
       return "An unexpected error occurred. Please try again.";
   }

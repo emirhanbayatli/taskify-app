@@ -63,6 +63,7 @@ export type UserType = {
   email: string | null;
   id: string | null;
   type?: AuthProviderType;
+  status: string;
 } | null;
 
 export type AuthProviderType = "google" | "emailPassword";

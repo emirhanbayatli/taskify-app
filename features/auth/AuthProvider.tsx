@@ -32,6 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           id: firebaseUser.uid,
           fullName: userData?.fullName || "",
           type: userData?.type,
+          status: "active",
         });
       } else {
         setUser(null);
@@ -137,6 +138,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email: firebaseUser.email,
         id: firebaseUser.uid,
         fullName,
+        status: "active",
       });
 
       toast.success("Logged in with Google successfully!");

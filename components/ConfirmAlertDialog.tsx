@@ -9,6 +9,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useState } from "react";
 
 interface ConfirmAlertDialogProps {
   open: boolean;
@@ -17,8 +18,11 @@ interface ConfirmAlertDialogProps {
   description?: string;
   confirmText?: string;
   cancelText?: string;
-  onConfirm: () => void | Promise<void>;
+  onConfirm: (inputValue?: string) => void | Promise<void>;
   loading?: boolean;
+  inputLabel?: string;
+  inputPlaceholder?: string;
+  requireInput?: boolean;
 }
 
 export default function ConfirmAlertDialog({
@@ -30,10 +34,22 @@ export default function ConfirmAlertDialog({
   cancelText = "Cancel",
   onConfirm,
   loading = false,
+  inputLabel,
+  inputPlaceholder,
+  requireInput = false,
 }: ConfirmAlertDialogProps) {
+  const [inputValue, setInputValue] = useState("");
   const handleConfirm = async () => {
-    await onConfirm();
-    onOpenChange(false);
+    if (requireInput && !inputValue.trim()) return;
+
+    try {
+      await onConfirm(requireInput ? inputValue : undefined);
+
+      setInputValue("");
+      onOpenChange(false);
+    } catch (err) {
+      console.error("Error in ConfirmAlertDialog:", err);
+    }
   };
 
   return (
@@ -45,6 +61,18 @@ export default function ConfirmAlertDialog({
             <AlertDialogDescription>{description}</AlertDialogDescription>
           )}
         </AlertDialogHeader>
+        {inputLabel && (
+          <div className="mt-2 space-y-2">
+            <label className="text-sm font-medium">{inputLabel}</label>
+            <input
+              type="password"
+              placeholder={inputPlaceholder}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="w-full mt-2 px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-red-500/20"
+            />
+          </div>
+        )}
 
         <AlertDialogFooter>
           <AlertDialogCancel disabled={loading}>{cancelText}</AlertDialogCancel>
