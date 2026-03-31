@@ -110,9 +110,7 @@ NEXT_PUBLIC_FIREBASE_API_KEY=your_key
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_id
 RESEND_API_KEY=your_resend_key
 ```
-
-#3. Launch
-
+### 3. Launch
 ```bash
 npm run dev
 ```
