@@ -1,13 +1,10 @@
 "use client";
-import { Column } from "@/components/Column";
-import { Button } from "@/components/ui/button";
 import {
   createColumn,
   deleteColumn,
   getColumnByWorkspaceId,
   updateColumn,
 } from "@/features/column/actions";
-import { Plus } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -19,7 +16,6 @@ import {
 } from "@/lib/types";
 import { ColumnModal } from "@/components/ColumnModal";
 import { createTask, getTaskByWorkspaceId } from "@/features/tasks/action";
-import MiniTaskCard from "@/components/MiniTaskCard";
 import { TaskModal } from "@/components/TaskModal";
 import TaskCard from "@/components/TaskCard";
 import { WorkspaceHeader } from "@/components/WorkspaceHeader";
@@ -31,26 +27,12 @@ import {
   removeMemberToTask,
   removeMemberToWorkspace,
 } from "@/features/members/actions";
-import { formatDate } from "@/lib/utils";
 import { MemberSelectModal } from "@/components/MemberSelectModal";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-import {
-  DndContext,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragOverlay,
-  defaultDropAnimationSideEffects,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  horizontalListSortingStrategy,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { SortableColumn } from "@/components/SortableColumn";
-import { SortableTask } from "@/components/SortableTask";
+import { PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { useWorkspaceDnd } from "@/features/hooks/dnd-kit-hooks";
 import ConfirmAlertDialog from "@/components/ConfirmAlertDialog";
+import WorkspaceBoard from "@/components/WorkspaceBoard";
 
 export default function Workspace() {
   const params = useParams();
@@ -130,20 +112,23 @@ export default function Workspace() {
     });
     if (result.success) {
       toast.success(result.message);
-      await fetchAllData();
+      setColumns((prev) => [...prev, result.data as ColumnType]);
     } else {
       toast.error(result.message);
     }
   }
 
-  const handleConfirmDeleteColumn = async () => {
+  const handleDeleteColumn = async () => {
     if (!deleteColumnId) return;
 
     const result = await deleteColumn(deleteColumnId);
 
     if (result.success) {
       toast.success(result.message);
-      await fetchAllData();
+      setColumns((prev) => prev.filter((col) => col.id !== deleteColumnId));
+      setTasks((prev) =>
+        prev.filter((task) => task.columnId !== deleteColumnId),
+      );
     } else {
       toast.error(result.message);
     }
@@ -162,7 +147,11 @@ export default function Workspace() {
     });
     if (result.success) {
       toast.success(result.message);
-      await fetchAllData();
+      setColumns((prev) =>
+        prev.map((col) =>
+          col.id === columnId ? { ...col, title: data.field1 } : col,
+        ),
+      );
     } else {
       toast.error(result.message);
     }
@@ -184,38 +173,41 @@ export default function Workspace() {
       selectedMembers: [],
       order: columnTasks.length + 1,
     });
-    if (result.success) {
+
+    if (result.success && result.data) {
       toast.success(result.message);
-      await fetchAllData();
+
+      setTasks((prev) => [...prev, result.data as Task]);
+
+      setAddTaskOpenModal(false);
     } else {
       toast.error(result.message);
     }
   }
-
   async function handleAddMemberToTask(taskId: string, member: Member) {
     const result = await addMemberToTask({ taskId, member });
-
     if (result.success) {
       toast.success(result.message);
-      await fetchAllData();
+
       setSelectedTask((prev) =>
-        prev
-          ? {
-              ...prev,
-              members: [...(prev.members || []), member],
-            }
-          : prev,
+        prev ? { ...prev, members: [...(prev.members || []), member] } : prev,
+      );
+
+      setTasks((prev) =>
+        prev.map((task) =>
+          task.id === taskId
+            ? { ...task, members: [...(task.members || []), member] }
+            : task,
+        ),
       );
     } else {
       toast.error(result.message);
     }
   }
-
   async function handleRemoveMemberFromTask(taskId: string, member: Member) {
     const result = await removeMemberToTask(member, taskId);
     if (result.success) {
       toast.success(result.message);
-      await fetchAllData();
       setSelectedTask((prev) =>
         prev
           ? {
@@ -250,7 +242,14 @@ export default function Workspace() {
             const result = await removeMemberToWorkspace(memberId, workspaceId);
             if (result.success) {
               toast.success(result.message);
-              await fetchAllData();
+              setWorkspace((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      members: prev.members?.filter((m) => m.id !== memberId),
+                    }
+                  : prev,
+              );
             } else {
               toast.error(result.message);
             }
@@ -260,115 +259,31 @@ export default function Workspace() {
         <LoadingSpinner />
       )}
 
-      <DndContext
+      <WorkspaceBoard
+        columns={columns}
+        tasks={tasks}
+        setColumns={setColumns}
+        setTasks={setTasks}
         sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="flex-1 flex gap-4 p-4 overflow-x-auto items-start">
-          <SortableContext
-            items={columns.map((c) => c.id as string)}
-            strategy={horizontalListSortingStrategy}
-          >
-            {columns.map((col) => {
-              const columnTasks = tasks.filter(
-                (task) => task.columnId === col.id,
-              );
-
-              return (
-                <SortableColumn key={col.id} column={col}>
-                  <Column
-                    title={col.title}
-                    onEdit={() => {
-                      setColumnId(col.id as string);
-                      setUpdateOpenModal(true);
-                    }}
-                    onDelete={() => {
-                      setDeleteColumnId(col.id as string);
-                      setOpenDeleteColumnDialog(true);
-                    }}
-                    onAddTask={() => {
-                      setColumnId(col.id as string);
-                      setAddTaskOpenModal(true);
-                    }}
-                  >
-                    <SortableContext
-                      items={columnTasks.map((t) => t.id as string)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {columnTasks.map((task) => (
-                        <SortableTask key={task.id} task={task}>
-                          <MiniTaskCard
-                            taskTitle={task.taskTitle}
-                            description={task.description}
-                            projectName={task.projectName}
-                            comments={task.comments as Comment[]}
-                            members={task.members as Member[]}
-                            workspaceId={task.workspaceId || ""}
-                            projectId={task.projectId as string}
-                            onClick={() => setSelectedTask(task)}
-                            createdAt={formatDate(task.createdAt as string)}
-                          />
-                        </SortableTask>
-                      ))}
-                    </SortableContext>
-                  </Column>
-                </SortableColumn>
-              );
-            })}
-          </SortableContext>
-          <div className="flex flex-col items-start min-w-[250px]">
-            <Button
-              variant="ghost"
-              className="text-slate-600 hover:text-blue-600 hover:bg-blue-50 border border-transparent hover:border-blue-100 transition-all gap-2"
-              onClick={() => setAddOpenModal(true)}
-            >
-              <Plus size={18} /> Add Column
-            </Button>
-          </div>
-        </div>
-
-        <DragOverlay
-          dropAnimation={{
-            sideEffects: defaultDropAnimationSideEffects({
-              styles: { active: { opacity: "0.5" } },
-            }),
-          }}
-        >
-          {activeColumn ? (
-            <Column title={activeColumn.title}>
-              {tasks
-                .filter((t) => t.columnId === activeColumn.id)
-                .map((task) => (
-                  <MiniTaskCard
-                    key={task.id}
-                    taskTitle={task.taskTitle}
-                    description={task.description}
-                    projectName={task.projectName}
-                    comments={[]}
-                    members={[]}
-                    workspaceId=""
-                    projectId=""
-                    createdAt=""
-                  />
-                ))}
-            </Column>
-          ) : null}
-          {activeTask ? (
-            <MiniTaskCard
-              taskTitle={activeTask.taskTitle}
-              description={activeTask.description}
-              projectName={activeTask.projectName}
-              comments={activeTask.comments as Comment[]}
-              members={activeTask.members as Member[]}
-              workspaceId={activeTask.workspaceId || ""}
-              projectId={activeTask.projectId as string}
-              createdAt={formatDate(activeTask.createdAt as string)}
-            />
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+        activeColumn={activeColumn}
+        setActiveColumn={setActiveColumn}
+        activeTask={activeTask}
+        setActiveTask={setActiveTask}
+        onAddColumn={() => setAddOpenModal(true)}
+        onEditColumn={(colId) => {
+          setColumnId(colId);
+          setUpdateOpenModal(true);
+        }}
+        onDeleteColumn={(colId) => {
+          setDeleteColumnId(colId);
+          setOpenDeleteColumnDialog(true);
+        }}
+        onAddTask={(colId) => {
+          setColumnId(colId);
+          setAddTaskOpenModal(true);
+        }}
+        onTaskClick={(task) => setSelectedTask(task)}
+      />
 
       {openAddModal && (
         <ColumnModal
@@ -415,7 +330,6 @@ export default function Workspace() {
           }
           onClose={() => {
             setSelectedTask(null);
-            fetchAllData();
           }}
           members={selectedTask?.members as Member[]}
           comments={selectedTask?.comments as Comment[]}
@@ -460,7 +374,7 @@ export default function Workspace() {
         confirmText="Delete"
         cancelText="Cancel"
         loading={false}
-        onConfirm={handleConfirmDeleteColumn}
+        onConfirm={handleDeleteColumn}
       />
     </div>
   );
