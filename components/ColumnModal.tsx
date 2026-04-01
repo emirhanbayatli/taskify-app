@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface ColumnModalProps {
   setOpenModal: (show: boolean) => void;
@@ -7,6 +7,7 @@ interface ColumnModalProps {
   firstInputLabel: string;
   btnLabel: string;
   onSubmitAction: (data: { field1: string }) => void;
+  currentValue?: string;
 }
 
 export const ColumnModal = ({
@@ -14,11 +15,18 @@ export const ColumnModal = ({
   title,
   firstInputLabel,
   btnLabel,
+  currentValue,
   onSubmitAction,
 }: ColumnModalProps) => {
   const [formData, setFormData] = useState({
     field1: "",
   });
+
+  useEffect(() => {
+    if (currentValue) {
+      setFormData({ field1: currentValue });
+    }
+  }, [currentValue]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

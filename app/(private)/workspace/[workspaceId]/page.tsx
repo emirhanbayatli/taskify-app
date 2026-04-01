@@ -30,7 +30,6 @@ import {
 import { MemberSelectModal } from "@/components/MemberSelectModal";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
-import { useWorkspaceDnd } from "@/features/hooks/dnd-kit-hooks";
 import ConfirmAlertDialog from "@/components/ConfirmAlertDialog";
 import WorkspaceBoard from "@/components/WorkspaceBoard";
 
@@ -176,9 +175,7 @@ export default function Workspace() {
 
     if (result.success && result.data) {
       toast.success(result.message);
-
       setTasks((prev) => [...prev, result.data as Task]);
-
       setAddTaskOpenModal(false);
     } else {
       toast.error(result.message);
@@ -220,15 +217,6 @@ export default function Workspace() {
       toast.error(result.message);
     }
   }
-
-  const { handleDragStart, handleDragOver, handleDragEnd } = useWorkspaceDnd({
-    columns,
-    tasks,
-    setColumns,
-    setTasks,
-    setActiveColumn,
-    setActiveTask,
-  });
 
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden">
@@ -297,6 +285,7 @@ export default function Workspace() {
       {openUpdateModal && (
         <ColumnModal
           setOpenModal={setUpdateOpenModal}
+          currentValue={columns.find((col) => col.id === columnId)?.title}
           title="Update Column"
           firstInputLabel="Column Name"
           btnLabel="Update Column"
@@ -330,6 +319,7 @@ export default function Workspace() {
           }
           onClose={() => {
             setSelectedTask(null);
+            fetchAllData();
           }}
           members={selectedTask?.members as Member[]}
           comments={selectedTask?.comments as Comment[]}
