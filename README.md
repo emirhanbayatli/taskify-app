@@ -1,17 +1,17 @@
-<div align="center">
-
 # 🚀 Taskify
 
 **Next-Generation Agile Task Management SaaS**
 
 Taskify is a high-performance, real-time platform designed to streamline project organization through intuitive Kanban boards and secure team collaboration.
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.1-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
-[![Firebase](https://img.shields.io/badge/Firebase-12.8-FFCA28?style=for-the-badge&logo=firebase&logoColor=white)](https://firebase.google.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[🌐 Live Demo](https://taskify-app-rho.vercel.app/)
 
-## </div>
+[![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=white)](https://firebase.google.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+
+---
 
 ## 📸 Preview
 
@@ -52,7 +52,7 @@ Taskify is a high-performance, real-time platform designed to streamline project
 
 ## 📖 Overview
 
-Taskify is a modern SaaS application that transforms complex project management into a simple, visual experience. Built with **React 19** and **Next.js 16**, it offers a seamless interface where teams can collaborate in real-time without the clutter of traditional tools.
+Taskify is a modern SaaS application that transforms complex project management into a simple, visual experience. Built with **React** and **Next.js**, it offers a seamless interface where teams can collaborate in real-time without the clutter of traditional tools.
 
 ---
 
@@ -79,12 +79,12 @@ Taskify is a modern SaaS application that transforms complex project management 
 
 ### Tech Stack
 
-| Layer        | Technologies                                  |
-| :----------- | :-------------------------------------------- |
-| **Frontend** | Next.js 16 (App Router), React 19, TypeScript |
-| **Styling**  | Tailwind CSS v4, Shadcn UI, Radix UI          |
-| **Backend**  | Firebase Auth, Cloud Firestore, Resend API    |
-| **Logic**    | @dnd-kit, React Hook Form, Zod                |
+| Layer    | Technologies                         |
+| :------- | :----------------------------------- |
+| Frontend | Next.js, React, TypeScript           |
+| Styling  | Tailwind CSS, Shadcn UI, Radix UI    |
+| Backend  | Firebase Auth, Firestore, Resend API |
+| Logic    | @dnd-kit, React Hook Form, Zod       |
 
 ---
 
@@ -92,25 +92,20 @@ Taskify is a modern SaaS application that transforms complex project management 
 
 ### 1. Prerequisites
 
-- Node.js v18.17+
-- Firebase Project Credentials
+- Node.js 18+
+- Firebase Project
 - Resend API Key
 
-### 2. Installation & Setup
+### 2. Installation
 
 ```bash
-# Clone the repository
-git clone [https://github.com/your-emirhanbayatli/taskify.git](https://github.com/your-emirhanbayatli/taskify.git)
-
-# Install dependencies
+git clone https://github.com/your-emirhanbayatli/taskify.git
+cd taskify
 npm install
-
-# Configure environment variables (.env)
-NEXT_PUBLIC_FIREBASE_API_KEY=your_key
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_id
-RESEND_API_KEY=your_resend_key
 ```
+
 ### 3. Launch
+
 ```bash
 npm run dev
 ```
