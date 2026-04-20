@@ -4,7 +4,6 @@ import { Column } from "@/lib/types";
 import {
   addDoc,
   collection,
-  deleteDoc,
   doc,
   getDocs,
   orderBy,
@@ -14,19 +13,24 @@ import {
   writeBatch,
 } from "firebase/firestore";
 
-export async function createColumn({ title, order, workspaceId }: Column) {
+export async function createColumn({ title, workspaceId, order }: Column) {
   try {
-    await addDoc(collection(db, "column"), {
+    const docRef = await addDoc(collection(db, "column"), {
       title,
-      order,
       workspaceId,
+      order,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
 
-    return { success: true, message: "Column created successfully!" };
+    return {
+      success: true,
+      message: "Column created successfully!",
+      data: { id: docRef.id, title, workspaceId, order },
+    };
   } catch (error) {
-    return { success: false, message: "Failed to create column" };
+    console.error(error);
+    return { success: false, message: "Column creation failed" };
   }
 }
 export const updateColumn = async ({

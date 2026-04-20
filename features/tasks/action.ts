@@ -20,11 +20,11 @@ export async function createTask({
   workspaceId,
   projectName,
   columnId,
-  selectedMembers,
+  selectedMembers = [],
   order,
 }: Task) {
   try {
-    await addDoc(collection(db, "tasks"), {
+    const docRef = await addDoc(collection(db, "tasks"), {
       taskTitle,
       description,
       workspaceId,
@@ -32,12 +32,26 @@ export async function createTask({
       columnId,
       order,
       members: selectedMembers,
-      memberIds: selectedMembers?.map((member: Member) => member.id),
+      memberIds: selectedMembers?.map((member: Member) => member.id) || [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
 
-    return { success: true, message: "Task created successfully!" };
+    return {
+      success: true,
+      message: "Task created successfully!",
+      data: {
+        id: docRef.id,
+        taskTitle,
+        description,
+        workspaceId,
+        projectName,
+        columnId,
+        order,
+        members: selectedMembers,
+        comments: [],
+      },
+    };
   } catch (error) {
     console.error(error);
     return { success: false, message: "Task creation failed" };

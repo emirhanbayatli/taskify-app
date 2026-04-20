@@ -98,13 +98,12 @@ export default function Navbar() {
                 </DropdownMenuLabel>
 
                 <DropdownMenuSeparator className="my-1" />
-
-                <DropdownMenuItem className="flex items-center p-2 rounded-lg cursor-pointer">
-                  <User className="mr-3 h-4 w-4 text-muted-foreground" />
-                  <Link href="/profile" className="font-medium">
+                <Link href="/profile" className="font-medium">
+                  <DropdownMenuItem className="flex items-center p-2 rounded-lg cursor-pointer">
+                    <User className="mr-3 h-4 w-4 text-muted-foreground" />
                     My Profile
-                  </Link>
-                </DropdownMenuItem>
+                  </DropdownMenuItem>
+                </Link>
 
                 <DropdownMenuSeparator className="my-1" />
 

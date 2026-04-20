@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface InputModalProps {
   setOpenModal: (show: boolean) => void;
@@ -7,6 +7,8 @@ interface InputModalProps {
   firstInputLabel: string;
   secondInputLabel: string;
   btnLabel: string;
+  currentFirstValue?: string;
+  currentSecondValue?: string;
   onSubmitAction: (data: { field1: string; field2: string }) => void;
 }
 
@@ -17,6 +19,8 @@ export const InputModal = ({
   secondInputLabel,
   btnLabel,
   onSubmitAction,
+  currentFirstValue,
+  currentSecondValue,
 }: InputModalProps) => {
   const [formData, setFormData] = useState({
     field1: "",
@@ -28,7 +32,12 @@ export const InputModal = ({
     if (onSubmitAction) onSubmitAction(formData);
     setOpenModal(false);
   };
-
+  useEffect(() => {
+    setFormData({
+      field1: currentFirstValue || "",
+      field2: currentSecondValue || "",
+    });
+  }, [currentFirstValue, currentSecondValue]);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="bg-white p-6 rounded-xl shadow-xl relative w-full max-w-md max-h-[90vh] ">

@@ -98,6 +98,8 @@ export const WorkspaceCard = ({
           firstInputLabel="Workspace Name"
           secondInputLabel="Description"
           btnLabel="Update"
+          currentFirstValue={title}
+          currentSecondValue={description}
           onSubmitAction={async (data) => {
             handleUpdate(data, id);
             setOpenEditModal(false);
